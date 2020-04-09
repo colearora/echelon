@@ -5,13 +5,15 @@
 #include <initializer_list>
 #include <cassert>
 
-namespace la {
+namespace la 
+{
 
 /**
  * Matrix: a container that encapsulates a rectangular grid of
  * floating-point values.
  */
-class Matrix {
+class Matrix 
+{
 public:
     Matrix(int m, int n);
     Matrix(int m, int n, float initVal);

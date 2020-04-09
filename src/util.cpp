@@ -1,7 +1,8 @@
 #include "inc/util.h"
 #include <cmath>  // abs()
 
-namespace la {
+namespace la
+{
 
 /**
  * approxEqual: returns true if the relative error between the
