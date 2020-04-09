@@ -3,7 +3,7 @@
 
 #include "inc/matrix.h"
 
-namespace la 
+namespace la
 {
 
 /**
@@ -11,7 +11,7 @@ namespace la
  * which operates on an augmented matrix representing the coefficients
  * of a linear system of equations.
  */
-class Gaussian 
+class Gaussian
 {
 public:
     static void eliminate(Matrix& A);
