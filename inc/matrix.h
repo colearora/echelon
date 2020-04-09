@@ -15,17 +15,17 @@ class Matrix {
 public:
     Matrix(int m, int n);
     Matrix(int m, int n, float initVal);
+    Matrix(const Matrix& A);
     ~Matrix();
 
     // Static factory methods
     static Matrix fromRows(std::initializer_list<std::initializer_list<float>> rows);
     static Matrix fromCols(std::initializer_list<std::initializer_list<float>> cols);
 
-    // Entry accessors
+    Matrix& operator=(const Matrix& A);
     float& operator()(int i, int j) {checkBounds(i, j); return _rowPtr[i][j];}
     const float& operator()(int i, int j) const {checkBounds(i, j); return _rowPtr[i][j];}
 
-    // Size getters
     int rows() const {return _m;}
     int cols() const {return _n;}
 
@@ -43,13 +43,13 @@ private:
     float** _rowPtr;
 };
 
+std::ostream& operator<<(std::ostream& os, const Matrix& A);
+
 // Matrix operations
 float determinant(const Matrix& A);
 Matrix inverse(const Matrix& A);
 Matrix adjugate(const Matrix& A);
 Matrix transpose(const Matrix& A);
-
-std::ostream& operator<<(std::ostream& os, const Matrix& A);
 
 }  // namespace la
 

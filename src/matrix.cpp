@@ -27,6 +27,18 @@ Matrix::Matrix(int m, int n, float initVal)
     }
 }
 
+Matrix::Matrix(const Matrix& A)
+: _m{A.rows()}, _n{A.cols()}
+{
+    _rowPtr = new float*[_m];
+    for (int i = 0; i < _m; ++i) {
+        _rowPtr[i] = new float[_n];
+        for (int j = 0; j < _n; ++j) {
+            _rowPtr[i][j] = A(i, j);
+        }
+    }
+}
+
 Matrix::~Matrix()
 {
     for (int i = 0; i < _m; ++i) {
@@ -53,6 +65,17 @@ Matrix Matrix::fromRows(std::initializer_list<std::initializer_list<float>> rows
 Matrix Matrix::fromCols(std::initializer_list<std::initializer_list<float>> cols)
 {
     return transpose(fromRows(cols));
+}
+
+Matrix& Matrix::operator=(const Matrix& A)
+{
+    assert(_m == A.rows() && _n == A.cols());
+    for (int i = 0; i < _m; ++i) {
+        for (int j = 0; j < _n; ++j) {
+            _rowPtr[i][j] = A(i, j);
+        }
+    }
+    return *this;
 }
 
 /* scaleRow: elementary row operation. */
@@ -82,6 +105,20 @@ void Matrix::replaceRow(int i1, int i2, float f)
     }
 }
 
+std::ostream& operator<<(std::ostream& os, const Matrix& A)
+{
+    std::ios_base::fmtflags f = os.flags();  // save ostream state
+    os << std::defaultfloat;
+    for (int i = 0; i < A.rows(); ++i) {
+        for (int j = 0; j < A.cols(); ++j) {
+            os << std::setw(12) << std::setprecision(8) << A(i, j);
+        }
+        os << '\n';
+    }
+    os.flags(f);  // restore ostream state
+    return os;
+}
+
 float determinant(const Matrix& A)
 {
     // TODO: implement
@@ -109,20 +146,6 @@ Matrix transpose(const Matrix& A)
         }
     }
     return B;
-}
-
-std::ostream& operator<<(std::ostream& os, const Matrix& A)
-{
-    std::ios_base::fmtflags f = os.flags();  // save ostream state
-    os << std::defaultfloat;
-    for (int i = 0; i < A.rows(); ++i) {
-        for (int j = 0; j < A.cols(); ++j) {
-            os << std::setw(12) << std::setprecision(8) << A(i, j);
-        }
-        os << '\n';
-    }
-    os.flags(f);  // restore ostream state
-    return os;
 }
 
 }  // namespace la
