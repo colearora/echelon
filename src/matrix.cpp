@@ -1,9 +1,11 @@
 #include "inc/matrix.h"
+#include "inc/util.h"
 
 #include <cassert>
 #include <utility>
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 
 namespace la
 {
@@ -127,12 +129,70 @@ std::ostream& operator<<(std::ostream& os, const Matrix& A)
     {
         for (int j = 0; j < A.cols(); ++j)
         {
-            os << std::setw(12) << std::setprecision(8) << A(i, j);
+            os << std::setw(18) << std::setprecision(8) << A(i, j);
         }
         os << '\n';
     }
     os.flags(f);  // restore ostream state
     return os;
+}
+
+bool operator==(const Matrix& A, const Matrix& B)
+{
+    if (A.size() != B.size())
+    {
+        return false;
+    }
+    for (int i = 0; i < A.rows(); ++i)
+    {
+        for (int j = 0; j < A.cols(); ++j)
+        {
+            if (A(i, j) != B(i, j))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool operator!=(const Matrix& A, const Matrix& B)
+{
+    return !(A == B);
+}
+
+bool approxEqual(const Matrix& A, const Matrix& B)
+{
+    if (A.size() != B.size())
+    {
+        return false;
+    }
+    for (int i = 0; i < A.rows(); ++i) 
+    {
+        for (int j = 0; j < A.cols(); ++j)
+        {
+            if (!approxEqual(A(i, j), B(i, j)))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+Matrix round(const Matrix& A, float epsilon)
+{
+    Matrix B(A.rows(), A.cols());
+    for (int i = 0; i < A.rows(); ++i)
+    {
+        for (int j = 0; j < A.cols(); ++j)
+        {
+            float actual = A(i, j);
+            float rounded = std::round(actual);
+            B(i, j) = (approxEqual(actual, rounded) ? rounded : actual);
+        }
+    }
+    return B;
 }
 
 float determinant(const Matrix& A)

@@ -9,8 +9,26 @@ namespace la
 /* eliminate: applies elementary row operations until A is in reduced echelon form. */
 void Gaussian::eliminate(Matrix& A)
 {
+    normalizeRows(A);
     forwardReduce(A, 0, 0);
     backwardReduce(A, A.rows() - 1, A.cols() - 2);  // -2 skips right-most col of aug matrix
+}
+
+/* normalizeRows: scales each row such that absolute value of largest element is 1. */
+void Gaussian::normalizeRows(Matrix& A)
+{
+    for (int i = 0; i < A.rows(); ++i)
+    {
+        float maxVal = 0.0F;
+        for (int j = 0; j < A.cols(); ++j)
+        {
+            maxVal = std::max(maxVal, std::fabs(A(i, j)));
+        }
+        if (maxVal > 0.0F)
+        {
+            A.scaleRow(i, 1.0F / maxVal);
+        }
+    }
 }
 
 /* forwardReduce: transforms submatrix A[r..m-1][c..n-1] to echelon form. */
@@ -46,7 +64,7 @@ void Gaussian::forwardReduce(Matrix& A, int r, int c)
         A.swapRows(r, pr);
 
         // Use the pivot element to create zeros below it in column c.
-        for (int i = r + 1; r < A.rows(); ++i)
+        for (int i = r + 1; i < A.rows(); ++i)
         {
             float f = -A(i, c) / A(r, c);
             A.replaceRow(i, r, f);

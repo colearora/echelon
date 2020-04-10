@@ -4,6 +4,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <cassert>
+#include <limits>
 
 namespace la 
 {
@@ -30,6 +31,9 @@ public:
 
     int rows() const {return _m;}
     int cols() const {return _n;}
+    std::pair<int, int> size() const {return {_m, _n};}
+    bool isSquare() const {return _m == _n;}
+    bool isVector() const {return _m == 1 || _n == 1;}
 
     // Elementary row operations
     void scaleRow(int i, float f);
@@ -46,6 +50,11 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const Matrix& A);
+bool operator==(const Matrix& A, const Matrix& B);
+bool operator!=(const Matrix& A, const Matrix& B);
+
+bool approxEqual(const Matrix& A, const Matrix& B);
+Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
 
 // Matrix operations
 float determinant(const Matrix& A);
