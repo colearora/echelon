@@ -16,5 +16,6 @@ catch:
 	$(CC) $(FLGS) -c test/test_driver.cpp -o test/test_driver.o
 
 clean:
+	rm -f test/test_driver.o
 	rm -rf bin/*
 
