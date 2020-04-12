@@ -1,17 +1,20 @@
 #include "inc/util.h"
 #include <cmath>  // abs()
+#include <cassert>
 
 namespace la
 {
 
-/**
- * approxEqual: returns true if the relative error between the
- * floating-point inputs a and b is less than or equal to some
- * tolerance, false otherwise.
- */
-bool approxEqual(float a, float b, float epsilon)
-{
-    return std::abs(a - b) <= (std::abs(a) + std::abs(b) + 1.0f) * epsilon;
+bool approxEqual(float x, float y, float epsilon) {
+    return std::abs(x - y) <= (std::abs(x) + std::abs(y) + 1.0F) * epsilon;
+}
+
+bool approxEqual(double x, double y, double epsilon) {
+    return std::abs(x - y) <= (std::abs(x) + std::abs(y) + 1.0) * epsilon;
+}
+
+bool approxEqual(Rational x, Rational y) {
+    return x == y;
 }
 
 }  // namespace la

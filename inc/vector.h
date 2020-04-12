@@ -4,9 +4,14 @@
 #include <cassert>
 #include <utility>
 #include <initializer_list>
+#include <iostream>
+#include <iomanip>
 
 namespace la {
 
+/**
+ * Vector: represents a one-dimensional sequence of values.
+ */
 template <typename T, std::size_t n>
 class Vector {
 public:
@@ -17,57 +22,52 @@ public:
         }
     }
     Vector(std::initializer_list<T> list) {
-        assert(list.size() <= n);
+        assert(n == list.size());
         std::size_t i = 0;
         for (T t : list) {
             _ent[i++] = t;
         }
-        while (i < n) {
-            _ent[i++] = T();
-        }
     }
 
-    T& operator[](std::size_t i) {assert(i < n); return _ent[i];}
-    const T& operator[](std::size_t i) const {assert(i < n); return _ent[i];}
+    T& operator[](std::size_t i) {
+        assert(i < n); 
+        return _ent[i];
+    }
+    const T& operator[](std::size_t i) const {
+        assert(i < n); 
+        return _ent[i];
+    }
 
-     std::size_t dim() const {return n;}
+    std::size_t dim() const {return n;}
 
 private:
     T _ent[n];
 };
 
-template <typename T, std::size_t m, std::size_t n>
-class Matrix {
-public:
-    Matrix() = default;
-    Matrix(T t0) {
-        for (int j = 0; j < n; ++j) {
-            for (int i = 0; i < m; ++i) {
-                _ent[j][i] = t0;
-            }
+template <typename T, std::size_t n>
+bool operator==(const Vector<T, n>& v, const Vector<T, n>& w) {
+    for (int i = 0; i < n; ++i) {
+        if (v[i] != w[i]) {
+            return false;
         }
     }
-    Matrix(std::initializer_list<std::initializer_list<T>> list) {
-        // TODO
-    }
+    return true;
+}
 
-    T& operator()(int i, int j) {assert(i < m && j < n); return _ent[j][i];}
-    const T& operator()(int i, int j) const {assert(i < m && j < n); return _ent[j][i];}
-    Vector<T, m>& operator[](int j) {
-        assert(j < n);
-        return *reinterpret_cast<Vector<T, m>*>(_ent[j]);
-    }
-    const Vector<T, m>& operator[](int j) const {
-        assert(j < n);
-        return *reinterpret_cast<Vector<T, m>*>(_ent[j]);
-    }
+template <typename T, std::size_t n>
+bool operator!=(const Vector<T, n>& v, const Vector<T, n>& w) {
+    return !(v == w);
+}
 
-    std::size_t rows() const {return m;}
-    std::size_t cols() const {return n;}
-
-private:
-    T _ent[n][m];  // column major
-};
+template <typename T, std::size_t n>
+std::ostream& operator<<(std::ostream& os, const Vector<T, n>& v) {
+    os << "(";
+    for (int i = 0; i < v.dim(); ++i) {
+        os << (i > 0 ? ", " : "") << v[i];
+    }
+    os << ")\n";
+    return os;
+}
 
 }  // namespace la
 
