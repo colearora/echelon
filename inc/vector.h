@@ -11,21 +11,29 @@ namespace la {
  */
 class Vector {
 public:
-    Vector(std::size_t n);
-    Vector(std::size_t n, float initVal);
+    Vector(int n);
+    Vector(int n, float initVal);
     Vector(std::initializer_list<float> list);
     Vector(const Vector& v);
     ~Vector();
 
     Vector& operator=(const Vector& v);
-    float& operator[](std::size_t i);
-    const float& operator[](std::size_t i) const;
+    Vector& operator+=(const Vector& v);
+    Vector& operator-=(const Vector& v);
+    Vector& operator*=(float x);
+    float& operator[](int i);
+    const float& operator[](int i) const;
 
-    std::size_t dim() const;
+    float* begin();
+    const float* begin() const;
+    float* end();
+    const float* end() const;
+
+    int dim() const;  // dimension
 
 private:
-    std::size_t _n;  // number of entries
-    float* _ent;     // pointer to first entry
+    int _n;      // number of entries
+    float* _ep;  // pointer to first entry
 };
 
 bool operator==(const Vector& v, const Vector& w);
@@ -34,8 +42,6 @@ Vector operator+(const Vector& v, const Vector& w);
 Vector operator-(const Vector& v, const Vector& w);
 Vector operator*(const Vector& v, float x);
 Vector operator*(float x, const Vector& v);
-Vector& operator+=(Vector& v, const Vector& w);
-Vector& operator*=(Vector& v, float x);
 std::ostream& operator<<(std::ostream& os, const Vector& v);
 
 }  // namespace la

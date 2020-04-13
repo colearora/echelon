@@ -3,50 +3,93 @@
 
 namespace la {
 
-Vector::Vector(std::size_t n) : _n{n}, _ent{new float[n]} {}
+Vector::Vector(int n) {
+    assert(n > 0);
+    _n = n;
+    _ep = new float[n];
+}
 
-Vector::Vector(std::size_t n, float initVal) : Vector(n) {
-    for (std::size_t i = 0; i < _n; ++i) {
-        _ent[i] = initVal;
+Vector::Vector(int n, float initVal) : Vector(n) {
+    for (int i = 0; i < _n; ++i) {
+        _ep[i] = initVal;
     }
 }
 
 Vector::Vector(std::initializer_list<float> list) : Vector(list.size()) {
-    std::size_t i = 0; 
+    int i = 0;
     for (float val : list) {
-        _ent[i++] = val;
+        _ep[i++] = val;
     }
 }
 
-Vector::Vector(const Vector& v) : Vector(v.dim()) {
-    for (std::size_t i = 0; i < _n; ++i) {
-        _ent[i] = v[i];
+Vector::Vector(const Vector& v) : Vector(v._n) {
+    for (int i = 0; i < _n; ++i) {
+        _ep[i] = v[i];
     }
 }
 
 Vector::~Vector() {
-    delete[] _ent;
+    delete[] _ep;
 }
 
 Vector& Vector::operator=(const Vector& v) {
-    assert(dim() == v.dim());
+    assert(_n == v._n);
     for (int i = 0; i < _n; ++i) {
-        _ent[i] = v[i];
+        _ep[i] = v[i];
     }
     return *this;
 }
 
-float& Vector::operator[](std::size_t i) {
-    assert(i < _n);
-    return _ent[i];
+Vector& Vector::operator+=(const Vector& v) {
+    assert(_n == v._n);
+    for (int i = 0; i < _n; ++i) {
+        _ep[i] += v[i];
+    }
+    return *this;
 }
 
-const float& Vector::operator[](std::size_t i) const {
-    assert(i < _n);
-    return _ent[i];
+Vector& Vector::operator-=(const Vector& v) {
+    assert(_n == v._n);
+    for (int i = 0; i < _n; ++i) {
+        _ep[i] -= v[i];
+    }
+    return *this;
 }
 
-std::size_t Vector::dim() const {
+Vector& Vector::operator*=(float x) {
+    for (int i = 0; i < _n; ++i) {
+        _ep[i] *= x;
+    }
+    return *this;
+}
+
+float& Vector::operator[](int i) {
+    assert(i >= 0 && i < _n);
+    return _ep[i];
+}
+
+const float& Vector::operator[](int i) const {
+    assert(i >= 0 && i < _n);
+    return _ep[i];
+}
+
+float* Vector::begin() {
+    return _ep;
+}
+
+const float* Vector::begin() const {
+    return _ep;
+}
+
+float* Vector::end() {
+    return _ep + _n;
+}
+
+const float* Vector::end() const {
+    return _ep + _n;
+}
+
+int Vector::dim() const {
     return _n;
 }
 
@@ -56,7 +99,7 @@ bool operator==(const Vector& v, const Vector& w) {
     } else if (v.dim() != w.dim()) {
         return false;
     }
-    for (std::size_t i = 0, n = v.dim(); i < n; ++i) {
+    for (int i = 0, n = v.dim(); i < n; ++i) {
         if (v[i] != w[i]) {
             return false;
         }
@@ -69,50 +112,24 @@ bool operator!=(const Vector& v, const Vector& w) {
 }
 
 Vector operator+(const Vector& v, const Vector& w) {
-    std::size_t n = v.dim();
-    assert(n == w.dim());
-    Vector res(n);
-    for (std::size_t i = 0; i < n; ++i) {
-        res[i] = v[i] + w[i];
-    }
-    return res;
+    return Vector(v) += w;
 }
 
 Vector operator-(const Vector& v, const Vector& w) {
-    return v + (-1.0F * w);
+    return Vector(v) -= w;
 }
 
 Vector operator*(const Vector& v, float x) {
-    return x * v;
+    return Vector(v) *= x;
 }
 
 Vector operator*(float x, const Vector& v) {
-    int n = v.dim();
-    Vector res(n);
-    for (std::size_t i = 0; i < n; ++i) {
-        res[i] = x * v[i];
-    }
-    return res;
-}
-
-Vector& operator+=(Vector& v, const Vector& w) {
-    assert(v.dim() == w.dim());
-    for (std::size_t i = 0, n = v.dim(); i < n; ++i) {
-        v[i] += w[i];
-    }
-    return v;
-}
-
-Vector& operator*=(Vector& v, float x) {
-    for (std::size_t i = 0, n = v.dim(); i < n; ++i) {
-        v[i] *= x;
-    }
-    return v;
+    return Vector(v) *= x;
 }
 
 std::ostream& operator<<(std::ostream& os, const Vector& v) {
     os << "(";
-    for (std::size_t i = 0; i < v.dim(); ++i) {
+    for (int i = 0; i < v.dim(); ++i) {
         os << (i > 0 ? ", " : "") << v[i];
     }
     os << ")";
