@@ -29,7 +29,7 @@ public:
     float* end();
     const float* end() const;
 
-    int dim() const;  // dimension
+    int size() const;
 
 private:
     int _n;      // number of entries

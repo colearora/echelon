@@ -89,17 +89,17 @@ const float* Vector::end() const {
     return _ep + _n;
 }
 
-int Vector::dim() const {
+int Vector::size() const {
     return _n;
 }
 
 bool operator==(const Vector& v, const Vector& w) {
     if (&v == &w) {
         return true;
-    } else if (v.dim() != w.dim()) {
+    } else if (v.size() != w.size()) {
         return false;
     }
-    for (int i = 0, n = v.dim(); i < n; ++i) {
+    for (int i = 0, n = v.size(); i < n; ++i) {
         if (v[i] != w[i]) {
             return false;
         }
@@ -129,7 +129,7 @@ Vector operator*(float x, const Vector& v) {
 
 std::ostream& operator<<(std::ostream& os, const Vector& v) {
     os << "(";
-    for (int i = 0; i < v.dim(); ++i) {
+    for (int i = 0; i < v.size(); ++i) {
         os << (i > 0 ? ", " : "") << v[i];
     }
     os << ")";

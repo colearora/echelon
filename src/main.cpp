@@ -6,7 +6,7 @@ int main() {
     // la::Vector<float, 4> v;
     // v[0] = 1.3;
     // v[3] = 1.67;
-    // std::cerr << v.dim() << std::endl;
+    // std::cerr << v.size() << std::endl;
     // std::cerr << v << std::endl;
 
     // la::Matrix<double, 4, 4> A({

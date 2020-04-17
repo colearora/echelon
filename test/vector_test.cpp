@@ -3,7 +3,7 @@
 
 TEST_CASE("vector: construction and access", "[vector]") {
     la::Vector u(3);
-    for (int i = 0; i < u.dim(); ++i) {
+    for (int i = 0; i < u.size(); ++i) {
         u[i] = 1.0F;
     }
     la::Vector v(3, 1.0F);
@@ -36,7 +36,7 @@ TEST_CASE("vector: iteration", "[vector]") {
     for (const float& entry : v) {
         REQUIRE(entry == 1.0F);
     }
-    for (int i = 0; i < v.dim(); ++i) {
+    for (int i = 0; i < v.size(); ++i) {
         REQUIRE(v[i] == 1.0F);
     }
 }

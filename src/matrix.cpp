@@ -29,7 +29,7 @@ Matrix::Matrix(int m, int n, float initVal) : Matrix(m, n) {
 }
 
 Matrix::Matrix(std::initializer_list<Vector> clist)
-        : Matrix(clist.begin()->dim(), clist.size()) {
+        : Matrix(clist.begin()->size(), clist.size()) {
     int j = 0;
     for (const Vector& c : clist) {
         _cp[j++] = c;
