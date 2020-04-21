@@ -5,6 +5,7 @@
 #include <utility>
 #include <initializer_list>
 #include <iostream>
+#include <limits>
 
 namespace la {
 
@@ -15,8 +16,6 @@ class Matrix {
 public:
     Matrix(int m, int n);
     Matrix(int m, int n, float initVal);
-    Matrix(std::initializer_list<Vector> clist);
-    Matrix(std::initializer_list<std::initializer_list<float>> rlist);
     Matrix(const Matrix& A);
     ~Matrix();
 
@@ -32,10 +31,14 @@ public:
     int rows() const;
     int cols() const;
 
+    static Matrix fromRows(std::initializer_list<Vector> rlist);
+    static Matrix fromCols(std::initializer_list<Vector> clist);
     static Matrix identity(int n);
+    static Matrix diagonal(const Vector& d);
 
 private:
-    int _m, _n;
+    int _m;       // number of rows
+    int _n;       // number of columns
     void* _bp;    // pointer to first byte of first column
     Vector* _cp;  // pointer to first column
 };
@@ -43,6 +46,10 @@ private:
 bool operator==(const Matrix& A, const Matrix& B);
 bool operator!=(const Matrix& A, const Matrix& B);
 std::ostream& operator<<(std::ostream& os, const Matrix& A);
+
+Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
+bool approxEqual(const Matrix& A, const Matrix& B,
+                 float epsilon = std::numeric_limits<float>::epsilon());
 
 }  // namespace la
 

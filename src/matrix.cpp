@@ -1,5 +1,11 @@
 #include "inc/matrix.h"
+#include "inc/util.h"
 #include <cassert>
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <algorithm>
 
 namespace la {
 
@@ -25,26 +31,6 @@ Matrix::Matrix(int m, int n, float initVal) : Matrix(m, n) {
         for (int i = 0; i < _m; ++i) {
             _cp[j][i] = initVal;
         }
-    }
-}
-
-Matrix::Matrix(std::initializer_list<Vector> clist)
-        : Matrix(clist.begin()->size(), clist.size()) {
-    int j = 0;
-    for (const Vector& c : clist) {
-        _cp[j++] = c;
-    }
-}
-
-Matrix::Matrix(std::initializer_list<std::initializer_list<float>> rlist)
-        : Matrix(rlist.size(), rlist.begin()->size()) {
-    int i = 0;
-    for (auto r : rlist) {
-        int j = 0;
-        for (float val : r) {
-            _cp[j++][i] = val;
-        }
-        ++i;
     }
 }
 
@@ -106,12 +92,45 @@ int Matrix::cols() const {
     return _n;
 }
 
-Matrix Matrix::identity(int n) {
-    Matrix I(n, n, 0.0F);
-    for (int j = 0; j < n; ++j) {
-        I[n][n] = 1.0F;
+Matrix Matrix::fromRows(std::initializer_list<Vector> rlist) {
+    assert(rlist.size() > 0);
+    int m = rlist.size();
+    int n = rlist.begin()->size();
+    la::Matrix A(m, n);
+    int i = 0;
+    for (const Vector& r : rlist) {
+        int j = 0;
+        for (float entry : r) {
+            A[j++][i] = entry;
+        }
+        ++i;
     }
-    return I;
+    return A;
+}
+
+Matrix Matrix::fromCols(std::initializer_list<Vector> clist) {
+    assert(clist.size() > 0);
+    int m = clist.begin()->size();
+    int n = clist.size();
+    la::Matrix A(m, n);
+    int j = 0;
+    for (const Vector& c : clist) {
+        A[j++] = c;
+    }
+    return A;
+}
+
+Matrix Matrix::identity(int n) {
+    return diagonal(Vector(n, 1.0F));
+}
+
+Matrix Matrix::diagonal(const Vector& d) {
+    int n = d.size();
+    Matrix D(n, n, 0.0F);
+    for (int j = 0; j < n; ++j) {
+        D[j][j] = d[j];
+    }
+    return D;
 }
 
 bool operator==(const Matrix& A, const Matrix& B) {
@@ -133,14 +152,45 @@ bool operator!=(const Matrix& A, const Matrix& B) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Matrix& A) {
+    int maxw[A.cols()];  // max width of default-formatted floats in A by column
+    std::ostringstream oss;
+    for (int j = 0; j < A.cols(); ++j) {
+        maxw[j] = 0;
+        for (float entry : A[j]) {
+            oss.str("");
+            oss << entry;
+            int w = oss.str().size();
+            maxw[j] = std::max(maxw[j], w);
+        }
+    }
     for (int i = 0, m = A.rows(); i < m; ++i) {
         os << (i == 0 ? "((" : " (");
         for (int j = 0, n = A.cols(); j < n; ++j) {
-            os << (j > 0 ? ", " : "") << A[j][i];
+            os << (j > 0 ? ", " : "") << std::setw(maxw[j]) << A[j][i];
         }
         os << (i == m - 1 ? "))\n" : ")\n");
     }
     return os;
+}
+
+Matrix round(const Matrix& A, float epsilon) {
+    Matrix B(A.rows(), A.cols());
+    for (int j = 0; j < B.cols(); ++j) {
+        B[j] = round(A[j], epsilon);
+    }
+    return B;
+}
+
+bool approxEqual(const Matrix& A, const Matrix& B, float epsilon) {
+    if (A.rows() != B.rows() || A.cols() != B.cols()) {
+        return false;
+    }
+    for (int j = 0; j < A.cols(); ++j) {
+        if (!approxEqual(A[j], B[j], epsilon)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 }  // namespace la

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <utility>
+#include <limits>
 
 namespace la {
 
@@ -11,7 +12,7 @@ namespace la {
  */
 class Vector {
 public:
-    Vector(int n);
+    explicit Vector(int n);
     Vector(int n, float initVal);
     Vector(std::initializer_list<float> list);
     Vector(const Vector& v);
@@ -43,6 +44,10 @@ Vector operator-(const Vector& v, const Vector& w);
 Vector operator*(const Vector& v, float x);
 Vector operator*(float x, const Vector& v);
 std::ostream& operator<<(std::ostream& os, const Vector& v);
+
+Vector round(const Vector& v, float epsilon = std::numeric_limits<float>::epsilon());
+bool approxEqual(const Vector& v, const Vector& w,
+                 float epsilon = std::numeric_limits<float>::epsilon());
 
 }  // namespace la
 

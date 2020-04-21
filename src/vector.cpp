@@ -1,5 +1,7 @@
 #include "inc/vector.h"
+#include "inc/util.h"
 #include <cassert>
+#include <cmath>
 
 namespace la {
 
@@ -134,6 +136,32 @@ std::ostream& operator<<(std::ostream& os, const Vector& v) {
     }
     os << ")";
     return os;
+}
+
+Vector round(const Vector& v, float epsilon) {
+    Vector w(v);
+    for (float& entry : w) {
+        float rounded = std::round(entry);  // to nearest integer
+        if (rounded == -0.0F) {
+            rounded = 0.0F;
+        }
+        if (approxEqual(entry, rounded, epsilon)) {
+            entry = rounded;
+        }
+    }
+    return w;
+}
+
+bool approxEqual(const Vector& v, const Vector& w, float epsilon) {
+    if (v.size() != w.size()) {
+        return false;
+    }
+    for (int i = 0; i < v.size(); ++i) {
+        if (!approxEqual(v[i], w[i], epsilon)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 }  // namespace la

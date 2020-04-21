@@ -14,12 +14,12 @@ TEST_CASE("matrix: construction and equality", "[matrix]") {
     B[2] += B[1];
 
     la::Vector c0{1.0F, 1.0F, 1.0F};
-    la::Matrix C{1 * c0, 2 * c0, 3 * c0};
+    la::Matrix C = la::Matrix::fromCols({c0, 2 * c0, 3 * c0});
 
-    la::Matrix D{
+    la::Matrix D = la::Matrix::fromRows({
         {1.0F, 2.0F, 3.0F},
         {1.0F, 2.0F, 3.0F},
-        {1.0F, 2.0F, 3.0F}};
+        {1.0F, 2.0F, 3.0F}});
 
     REQUIRE(A == B);
     REQUIRE(B == C);
@@ -40,5 +40,21 @@ TEST_CASE("matrix: iteration", "[matrix]") {
     }
     for (int j = 0; j < A.cols(); ++j) {
         REQUIRE(A[j] == c0);
+    }
+}
+
+TEST_CASE("matrix: identity", "[matrix]") {
+    int n = 4;
+    la::Matrix I = la::Matrix::identity(n);
+    for (int j = 0; j < I.cols(); ++j) {
+        for (int i = 0; i < I.rows(); ++i) {
+            if (i == j) {
+                // On main diagonal.
+                REQUIRE(I[i][j] == 1.0F);
+            } else {
+                // Off main diagonal.
+                REQUIRE(I[i][j] == 0.0F);
+            }
+        }
     }
 }
