@@ -151,6 +151,39 @@ bool operator!=(const Matrix& A, const Matrix& B) {
     return !(A == B);
 }
 
+/**
+ * Returns the matrix-vector product Ax
+ * as the linear combination of the columns of A
+ * using the corresponding entries of x as weights.
+ */
+Vector operator*(const Matrix& A, const Vector& x) {
+    assert(A.cols() == x.size());
+    Vector b(A.rows(), 0.0F);
+    for (int j = 0; j < A.cols(); ++j) {
+        b += x[j] * A[j];
+    }
+    return b;
+}
+
+/**
+ * Returns the matrix-vector product Ax
+ * as the linear combination of the columns of A
+ * using the corresponding entries of x as weights.
+ * Mutates both A and x in place, consuming A and returning x.
+ * (Efficient but destroys A.)
+ */
+Vector& operator*=(Matrix& A, Vector& x) {
+    assert(A.cols() == x.size());
+    for (int j = 0; j < A.cols(); ++j) {
+        A[j] *= x[j];
+        x[j] = 0.0F;
+    }
+    for (const Vector& c : A) {
+        x += c;
+    }
+    return x;
+}
+
 std::ostream& operator<<(std::ostream& os, const Matrix& A) {
     int maxw[A.cols()];  // max width of default-formatted floats in A by column
     std::ostringstream oss;

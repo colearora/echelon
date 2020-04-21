@@ -39,7 +39,5 @@ TEST_CASE("gaussian: 4x5 with 4 pivots", "[gaussian]") {
         {0, 0, 1, 0,  8.04},
         {0, 0, 0, 1,  5.84}});
     la::eliminate(A);
-    std::cerr << A << std::endl;
-    std::cerr << U << std::endl;
     REQUIRE(la::approxEqual(A, U, 1e-3F));
 }

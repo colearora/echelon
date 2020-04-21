@@ -9,11 +9,11 @@ main:
 	# Build the application.
 	$(CC) $(FLGS) src/*.cpp -o bin/main
 	# Build the unit tests.
-	$(CC) $(FLGS) test/test_driver.o `ls test/*.cpp | grep -v driver` `ls src/*.cpp | grep -v main` -o bin/test_driver
+	$(CC) $(FLGS) test/testdriver.o `ls test/*.cpp | grep -v driver` `ls src/*.cpp | grep -v main` -o bin/testdriver
 
 catch:
 	# Build the unit test driver.
-	$(CC) $(FLGS) -c test/test_driver.cpp -o test/test_driver.o
+	$(CC) $(FLGS) -c test/testdriver.cpp -o test/testdriver.o
 
 clean:
 	rm -f test/test_driver.o

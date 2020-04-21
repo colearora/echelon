@@ -45,6 +45,8 @@ private:
 
 bool operator==(const Matrix& A, const Matrix& B);
 bool operator!=(const Matrix& A, const Matrix& B);
+Vector operator*(const Matrix& A, const Vector& x);
+Vector& operator*=(Matrix& A, Vector& x);
 std::ostream& operator<<(std::ostream& os, const Matrix& A);
 
 Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
