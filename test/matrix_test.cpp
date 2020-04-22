@@ -59,6 +59,21 @@ TEST_CASE("matrix: identity", "[matrix]") {
     }
 }
 
+TEST_CASE("matrix: sum and scalar multiple", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        { 4, 0, 5},
+        {-1, 3, 2}});
+    la::Matrix B = la::Matrix::fromRows({
+        {1, 1, 1},
+        {3, 5, 7}});
+    REQUIRE(2 * B == la::Matrix::fromRows({
+        {2,  2,  2},
+        {6, 10, 14}}));
+    REQUIRE(A - (2 * B) == la::Matrix::fromRows({
+        { 2, -2,   3},
+        {-7, -7, -12}}));
+}
+
 TEST_CASE("matrix: matrix-vector multiplication", "[matrix]") {
     la::Matrix M = la::Matrix::fromRows({
         {0.98033F, 0.00179F},

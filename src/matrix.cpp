@@ -66,6 +66,14 @@ Matrix& Matrix::operator+=(const Matrix& A) {
     return *this;
 }
 
+Matrix& Matrix::operator-=(const Matrix& A) {
+    assert(_m == A._m && _n == A._n);
+    for (int j = 0; j < _n; ++j) {
+        _cp[j] -= A[j];
+    }
+    return *this;
+}
+
 Matrix& Matrix::operator*=(float f) {
     for (int j = 0; j < _n; ++j) {
         _cp[j] *= f;
@@ -168,6 +176,10 @@ bool operator!=(const Matrix& A, const Matrix& B) {
 
 Matrix operator+(const Matrix& A, const Matrix& B) {
     return Matrix(A) += B;
+}
+
+Matrix operator-(const Matrix& A, const Matrix& B) {
+    return Matrix(A) -= B;
 }
 
 Matrix operator*(const Matrix& A, float f) {
