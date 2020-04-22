@@ -91,10 +91,10 @@ void swapRows(Matrix& A, int i1, int i2) {
     if (i1 == i2) {
         return;
     }
-    // std::cerr << "swap R" << i1 << " and R" << i2 << std::endl;
     for (int j = 0; j < A.cols(); ++j) {
         std::swap(A[j][i1], A[j][i2]);
     }
+    // std::cerr << "swap R" << i1 << " and R" << i2 << std::endl;
     // std::cerr << A << std::endl;
 }
 
@@ -103,19 +103,19 @@ void scaleRow(Matrix& A, int i, float f) {
     if (f == 1.0F) {
         return;
     }
-    // std::cerr << "scale R" << i << " by " << f << '\n';
     for (int j = 0; j < A.cols(); ++j) {
         A[j][i] *= f;
     }
+    // std::cerr << "scale R" << i << " by " << f << '\n';
     // std::cerr << A << std::endl;
 }
 
 /* Replaces row i1 of A by the sum of row i1 and an f-scaled row i2. */
 void replaceRow(Matrix& A, int i1, int i2, float f) {
-    // std::cerr << "replace R" << i1 << " with R" << i1 << " + (" << f << " * R" << i2 << ")\n";
     for (int j = 0; j < A.cols(); ++j) {
         A[j][i1] += f * A[j][i2];
     }
+    // std::cerr << "replace R" << i1 << " with R" << i1 << " + (" << f << " * R" << i2 << ")\n";
     // std::cerr << A << std::endl;
 }
 

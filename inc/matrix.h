@@ -23,8 +23,8 @@ public:
     Matrix& operator+=(const Matrix& A);
     Matrix& operator-=(const Matrix& A);
     Matrix& operator*=(float f);
-    Vector& operator[](int j);
-    const Vector& operator[](int j) const;
+    Vector& operator[](int j);              // column accessor
+    const Vector& operator[](int j) const;  // column accessor
 
     Vector* begin();
     const Vector* begin() const;
@@ -38,6 +38,7 @@ public:
     static Matrix fromCols(std::initializer_list<Vector> clist);
     static Matrix identity(int n);
     static Matrix diagonal(const Vector& d);
+    static Matrix random(int m, int n, int seed = -1);
 
 private:
     int _m;       // number of rows
@@ -53,13 +54,14 @@ Matrix operator-(const Matrix& A, const Matrix& B);
 Matrix operator*(const Matrix& A, float f);
 Matrix operator*(float f, const Matrix& A);
 Vector operator*(const Matrix& A, const Vector& x);
-// Vector& operator*=(Vector& x, Matrix& A);
-Vector& operator*=(Vector& x, Matrix&& A);
+Matrix operator*(const Matrix& A, const Matrix& B);
 std::ostream& operator<<(std::ostream& os, const Matrix& A);
 
 Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
 bool approxEqual(const Matrix& A, const Matrix& B,
                  float epsilon = std::numeric_limits<float>::epsilon());
+
+Matrix pow(const Matrix& A, int k);
 
 }  // namespace la
 

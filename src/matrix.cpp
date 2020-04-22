@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 namespace la {
 
@@ -156,6 +158,22 @@ Matrix Matrix::diagonal(const Vector& d) {
     return D;
 }
 
+/* Returns an m x n matrix with random entries in [0,1]. */
+Matrix Matrix::random(int m, int n, int seed) {
+    if (seed < 0) {
+        seed = std::time(nullptr);
+    }
+    std::srand(seed);
+    Matrix R(m, n);
+    for (Vector& c : R) {
+        float denom = 1.0F / RAND_MAX;
+        for (float& entry : c) {
+            entry = std::rand() * denom;
+        }
+    }
+    return R;
+}
+
 bool operator==(const Matrix& A, const Matrix& B) {
     if (&A == &B) {
         return true;
@@ -190,32 +208,24 @@ Matrix operator*(float f, const Matrix& A) {
     return Matrix(A) *= f;
 }
 
-/* Returns the matrix-vector product Ax.*/
 Vector operator*(const Matrix& A, const Vector& x) {
     assert(A.cols() == x.size());
     Vector b(A.rows(), 0.0F);
     for (int j = 0; j < A.cols(); ++j) {
-        b += x[j] * A[j];
+        if (x[j] != 0.0F) {
+            b += x[j] * A[j];
+        }
     }
     return b;
 }
 
-/* Premultiplies x by A, updating x to Ax in place while consuming A. */
-Vector& operator*=(Vector& x, Matrix& A) {
-    return x *= static_cast<Matrix&&>(A);
-}
-
-/* Premultiplies x by A, updating x to Ax in place while consuming A. */
-Vector& operator*=(Vector& x, Matrix&& A) {
-    assert(A.cols() == x.size());
-    for (int j = 0; j < A.cols(); ++j) {
-        A[j] *= x[j];
-        x[j] = 0.0F;
+Matrix operator*(const Matrix& A, const Matrix& B) {
+    assert(A.cols() == B.rows());
+    Matrix M(A.rows(), B.cols());
+    for (int j = 0; j < B.cols(); ++j) {
+        M[j] = A * B[j];
     }
-    for (const Vector& c : A) {
-        x += c;
-    }
-    return x;
+    return M;
 }
 
 std::ostream& operator<<(std::ostream& os, const Matrix& A) {
@@ -258,6 +268,16 @@ bool approxEqual(const Matrix& A, const Matrix& B, float epsilon) {
         }
     }
     return true;
+}
+
+/* Returns the kth power (k >= 0) of square matrix A. */
+Matrix pow(const Matrix& A, int k) {
+    assert(A.rows() == A.cols() && k >= 0);
+    Matrix M = Matrix::identity(A.rows());
+    while (k--) {
+        M = A * M;
+    }
+    return M;
 }
 
 }  // namespace la

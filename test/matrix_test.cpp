@@ -50,10 +50,10 @@ TEST_CASE("matrix: identity", "[matrix]") {
         for (int i = 0; i < I.rows(); ++i) {
             if (i == j) {
                 // On main diagonal.
-                REQUIRE(I[i][j] == 1.0F);
+                REQUIRE(I[j][i] == 1.0F);
             } else {
                 // Off main diagonal.
-                REQUIRE(I[i][j] == 0.0F);
+                REQUIRE(I[j][i] == 0.0F);
             }
         }
     }
@@ -79,17 +79,45 @@ TEST_CASE("matrix: matrix-vector multiplication", "[matrix]") {
         {0.98033F, 0.00179F},
         {0.01967F, 0.99821F}});
     la::Vector x{3.8041430e7F, 2.75872610e8F};
-    SECTION("*") {
-        for (int i = 0; i < 10; ++i) {
-            x = M * x;
-        }
-        REQUIRE(approxEqual(x, la::Vector{3.5729e7F, 2.7818e8F}, 1e-3));
+    for (int i = 0; i < 10; ++i) {
+        x = M * x;
     }
-    SECTION("*=") {
-        for (int i = 0; i < 9; ++i) {
-            x *= la::Matrix(M);
-        }
-        x *= M;
-        REQUIRE(approxEqual(x, la::Vector{3.5729e7F, 2.7818e8F}, 1e-3));
-    }
+    REQUIRE(approxEqual(x, la::Vector{3.5729e7F, 2.7818e8F}, 1e-3));
+}
+
+TEST_CASE("matrix: matrix-matrix multiplication", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        {2,  3},
+        {1, -5}});
+    la::Matrix B = la::Matrix::fromRows({
+        {4,  3, 6},
+        {1, -2, 3}});
+    REQUIRE(A * B == la::Matrix::fromRows({
+        {11,  0, 21},
+        {-1, 13, -9}}));
+}
+
+TEST_CASE("matrix: random", "[matrix]") {
+    int n = 25;
+    REQUIRE(la::Matrix::random(n, n, 0) != la::Matrix::random(n, n));
+}
+
+TEST_CASE("matrix: small power", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        {  1,   2,   2,    1,   4},
+        {3.4,   1,   1,    0,   0},
+        {0.5, 0.6, 1.9, -2.5, 1.6},
+        {  4,   3,   2,    2,   1},
+        {  8, 3.3,   2,    2,   7}});
+    la::Matrix AAAAA = la::Matrix::fromRows({
+        { 65028.3214F,	36701.4724F, 32087.1142F,  11718.985F,  65669.4188F},
+        { 21771.0891F,	12142.9406F, 10561.7943F,  3892.1805F,  21793.3282F},
+        {15385.95003F,	8688.77318F, 7465.56279F, 3000.89125F, 15359.35306F},
+        { 50610.1654F,	28386.6304F, 24807.9022F,   8995.465F,  51117.7708F},
+        {147033.9025F,	82781.2226F, 72387.6773F, 26271.6875F, 147941.2582F}});
+    REQUIRE(la::approxEqual(la::pow(A, 5), AAAAA, 1e-3));
+}
+
+TEST_CASE("matrix: large power", "[matrix]") {
+    la::pow(la::Matrix::random(25, 25), 100);
 }
