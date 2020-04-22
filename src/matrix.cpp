@@ -58,6 +58,21 @@ Matrix& Matrix::operator=(const Matrix& A) {
     return *this;
 }
 
+Matrix& Matrix::operator+=(const Matrix& A) {
+    assert(_m == A._m && _n == A._n);
+    for (int j = 0; j < _n; ++j) {
+        _cp[j] += A[j];
+    }
+    return *this;
+}
+
+Matrix& Matrix::operator*=(float f) {
+    for (int j = 0; j < _n; ++j) {
+        _cp[j] *= f;
+    }
+    return *this;
+}
+
 Vector& Matrix::operator[](int j) {
     assert(j >= 0 && j < _n);
     return _cp[j];
@@ -151,11 +166,19 @@ bool operator!=(const Matrix& A, const Matrix& B) {
     return !(A == B);
 }
 
-/**
- * Returns the matrix-vector product Ax
- * as the linear combination of the columns of A
- * using the corresponding entries of x as weights.
- */
+Matrix operator+(const Matrix& A, const Matrix& B) {
+    return Matrix(A) += B;
+}
+
+Matrix operator*(const Matrix& A, float f) {
+    return Matrix(A) *= f;
+}
+
+Matrix operator*(float f, const Matrix& A) {
+    return Matrix(A) *= f;
+}
+
+/* Returns the matrix-vector product Ax.*/
 Vector operator*(const Matrix& A, const Vector& x) {
     assert(A.cols() == x.size());
     Vector b(A.rows(), 0.0F);
@@ -165,14 +188,13 @@ Vector operator*(const Matrix& A, const Vector& x) {
     return b;
 }
 
-/**
- * Returns the matrix-vector product Ax
- * as the linear combination of the columns of A
- * using the corresponding entries of x as weights.
- * Mutates both A and x in place, consuming A and returning x.
- * (Efficient but destroys A.)
- */
-Vector& operator*=(Matrix& A, Vector& x) {
+/* Premultiplies x by A, updating x to Ax in place while consuming A. */
+Vector& operator*=(Vector& x, Matrix& A) {
+    return x *= static_cast<Matrix&&>(A);
+}
+
+/* Premultiplies x by A, updating x to Ax in place while consuming A. */
+Vector& operator*=(Vector& x, Matrix&& A) {
     assert(A.cols() == x.size());
     for (int j = 0; j < A.cols(); ++j) {
         A[j] *= x[j];

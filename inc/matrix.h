@@ -20,6 +20,8 @@ public:
     ~Matrix();
 
     Matrix& operator=(const Matrix& A);
+    Matrix& operator+=(const Matrix& A);
+    Matrix& operator*=(float f);
     Vector& operator[](int j);
     const Vector& operator[](int j) const;
 
@@ -45,8 +47,12 @@ private:
 
 bool operator==(const Matrix& A, const Matrix& B);
 bool operator!=(const Matrix& A, const Matrix& B);
+Matrix operator+(const Matrix& A, const Matrix& B);
+Matrix operator*(const Matrix& A, float f);
+Matrix operator*(float f, const Matrix& A);
 Vector operator*(const Matrix& A, const Vector& x);
-Vector& operator*=(Matrix& A, Vector& x);
+Vector& operator*=(Vector& x, Matrix& A);
+Vector& operator*=(Vector& x, Matrix&& A);
 std::ostream& operator<<(std::ostream& os, const Matrix& A);
 
 Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());

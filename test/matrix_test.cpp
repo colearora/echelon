@@ -58,3 +58,23 @@ TEST_CASE("matrix: identity", "[matrix]") {
         }
     }
 }
+
+TEST_CASE("matrix: matrix-vector multiplication", "[matrix]") {
+    la::Matrix M = la::Matrix::fromRows({
+        {0.98033F, 0.00179F},
+        {0.01967F, 0.99821F}});
+    la::Vector x{3.8041430e7F, 2.75872610e8F};
+    SECTION("*") {
+        for (int i = 0; i < 10; ++i) {
+            x = M * x;
+        }
+        REQUIRE(approxEqual(x, la::Vector{3.5729e7F, 2.7818e8F}, 1e-3));
+    }
+    SECTION("*=") {
+        for (int i = 0; i < 9; ++i) {
+            x *= la::Matrix(M);
+        }
+        x *= M;
+        REQUIRE(approxEqual(x, la::Vector{3.5729e7F, 2.7818e8F}, 1e-3));
+    }
+}
