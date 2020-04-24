@@ -99,7 +99,20 @@ TEST_CASE("matrix: matrix-matrix multiplication", "[matrix]") {
 
 TEST_CASE("matrix: random", "[matrix]") {
     int n = 25;
-    REQUIRE(la::Matrix::random(n, n, 0) != la::Matrix::random(n, n));
+    REQUIRE(la::Matrix::random(n, n) != la::Matrix::random(n, n));
+}
+
+TEST_CASE("matrix: random in [lo, hi]", "[matrix]") {
+    int n = 4;
+    float lo = 6.0;
+    float hi = 8.0;
+    la::Matrix R = la::Matrix::random(n, n, lo, hi);
+    for (const la::Vector& c : R) {
+        for (float entry : c) {
+            REQUIRE(entry >= lo);
+            REQUIRE(entry <= hi);
+        }
+    }
 }
 
 TEST_CASE("matrix: small power", "[matrix]") {
@@ -120,4 +133,25 @@ TEST_CASE("matrix: small power", "[matrix]") {
 
 TEST_CASE("matrix: large power", "[matrix]") {
     la::pow(la::Matrix::random(25, 25), 100);
+}
+
+TEST_CASE("matrix: transpose", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        {-5,  2},
+        { 1, -3},
+        { 0,  4}});
+    la::Matrix B = la::Matrix::fromRows({
+        {6,  6},
+        {2, -8},
+        {3,  9}});
+    la::Matrix C = la::Matrix::fromRows({
+        { 1, 2},
+        {-3, 4}});
+    REQUIRE(la::transpose(A) == la::Matrix::fromRows({
+        {-5, 1, 0},
+        {2, -3, 4}}));
+    REQUIRE(la::transpose(la::transpose(A)) == A);
+    REQUIRE(la::transpose(A + B) == la::transpose(A) + la::transpose(B));
+    REQUIRE(la::transpose(3.14F * A) == 3.14F * la::transpose(A));
+    REQUIRE(la::transpose(A * C) == la::transpose(C) * la::transpose(A));
 }

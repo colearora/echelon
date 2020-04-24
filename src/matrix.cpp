@@ -159,18 +159,27 @@ Matrix Matrix::diagonal(const Vector& d) {
 }
 
 /* Returns an m x n matrix with random entries in [0,1]. */
-Matrix Matrix::random(int m, int n, int seed) {
-    if (seed < 0) {
-        seed = std::time(nullptr);
+Matrix Matrix::random(int m, int n) {
+    static bool seeded = false;
+    if (!seeded) {
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        seeded = true;
     }
-    std::srand(seed);
     Matrix R(m, n);
+    float denom = 1.0F / RAND_MAX;
     for (Vector& c : R) {
-        float denom = 1.0F / RAND_MAX;
         for (float& entry : c) {
             entry = std::rand() * denom;
         }
     }
+    return R;
+}
+
+/* Returns an m x n matrix with random entries in [lo, hi]. */
+Matrix Matrix::random(int m, int n, float lo, float hi) {
+    Matrix R = random(m, n);
+    R *= (hi - lo);
+    R += Matrix(m, n, lo);
     return R;
 }
 
@@ -270,14 +279,20 @@ bool approxEqual(const Matrix& A, const Matrix& B, float epsilon) {
     return true;
 }
 
-/* Returns the kth power (k >= 0) of square matrix A. */
-Matrix pow(const Matrix& A, int k) {
-    assert(A.rows() == A.cols() && k >= 0);
-    Matrix M = Matrix::identity(A.rows());
-    while (k--) {
-        M = A * M;
+/* Returns the kth power of square matrix A. */
+Matrix pow(const Matrix& A, unsigned int k) {
+    return (k == 0 ? Matrix::identity(A.rows()) : A * pow(A, k - 1));
+}
+
+Matrix transpose(const Matrix& A) {
+    Matrix T(A.cols(), A.rows());
+    for (int j = 0; j < A.cols(); ++j) {
+        // Set jth row of T equal to the jth column of A.
+        for (int i = 0; i < A.rows(); ++i) {
+            T[i][j] = A[j][i];
+        }
     }
-    return M;
+    return T;
 }
 
 }  // namespace la

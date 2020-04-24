@@ -38,7 +38,8 @@ public:
     static Matrix fromCols(std::initializer_list<Vector> clist);
     static Matrix identity(int n);
     static Matrix diagonal(const Vector& d);
-    static Matrix random(int m, int n, int seed = -1);
+    static Matrix random(int m, int n);
+    static Matrix random(int m, int n, float lo, float hi);
 
 private:
     int _m;       // number of rows
@@ -61,7 +62,8 @@ Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilo
 bool approxEqual(const Matrix& A, const Matrix& B,
                  float epsilon = std::numeric_limits<float>::epsilon());
 
-Matrix pow(const Matrix& A, int k);
+Matrix pow(const Matrix& A, unsigned int k);
+Matrix transpose(const Matrix& A);
 
 }  // namespace la
 
