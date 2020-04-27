@@ -379,6 +379,7 @@ float det(const Matrix& A) {
     }
 
     // Identify the row (i) with the most zeros.
+    // Expanding this row requires the least work.
     int i = 0;
     int maxZeros = 0;
     for (int k = 0; k < A.rows(); ++k) {
