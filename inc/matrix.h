@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <limits>
+#include <set>
 
 namespace la {
 
@@ -34,12 +35,17 @@ public:
     int rows() const;
     int cols() const;
 
+    // Factories:
     static Matrix fromRows(std::initializer_list<Vector> rlist);
     static Matrix fromCols(std::initializer_list<Vector> clist);
+    static Matrix fromDiag(const Vector& d);
+    static Matrix fromParts(const Matrix& A, const Vector& b);
+    static Matrix fromParts(const Matrix& A, const Matrix& B);
     static Matrix identity(int n);
-    static Matrix diagonal(const Vector& d);
     static Matrix random(int m, int n);
     static Matrix random(int m, int n, float lo, float hi);
+    static Matrix whitelist(const Matrix& A, std::set<int> rs, std::set<int> cs);
+    static Matrix blacklist(const Matrix& A, std::set<int> rs, std::set<int> cs);
 
 private:
     int _m;       // number of rows
@@ -62,8 +68,13 @@ Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilo
 bool approxEqual(const Matrix& A, const Matrix& B,
                  float epsilon = std::numeric_limits<float>::epsilon());
 
+bool isSquare(const Matrix& A);
+bool isInvertible(const Matrix& A);
+
 Matrix pow(const Matrix& A, unsigned int k);
 Matrix transpose(const Matrix& A);
+float det(const Matrix& A);
+Matrix inverse(const Matrix& A);
 
 }  // namespace la
 

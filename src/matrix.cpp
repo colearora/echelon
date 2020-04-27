@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
-#include <cstdlib>
-#include <ctime>
 
 namespace la {
 
@@ -145,11 +143,8 @@ Matrix Matrix::fromCols(std::initializer_list<Vector> clist) {
     return A;
 }
 
-Matrix Matrix::identity(int n) {
-    return diagonal(Vector(n, 1.0F));
-}
-
-Matrix Matrix::diagonal(const Vector& d) {
+/* Returns the square matrix having d as main diagonal and zeros elsewhere. */
+Matrix Matrix::fromDiag(const Vector& d) {
     int n = d.size();
     Matrix D(n, n, 0.0F);
     for (int j = 0; j < n; ++j) {
@@ -158,29 +153,98 @@ Matrix Matrix::diagonal(const Vector& d) {
     return D;
 }
 
+/* Returns the augmented matrix [A b]. */
+Matrix Matrix::fromParts(const Matrix& A, const Vector& b) {
+    return fromParts(A, fromCols({b}));
+}
+
+/* Returns the augmented matrix [A B]. */
+Matrix Matrix::fromParts(const Matrix& A, const Matrix& B) {
+    assert(A.rows() == B.rows());
+    int m = A.rows();
+    int n = A.cols() + B.cols();
+    Matrix C(m, n);
+    for (int j = 0; j < n; ++j) {
+        for (int i = 0; i < m; ++i) {
+            C[j][i] = (j < A.cols()) ? A[j][i] : B[j - A.cols()][i];
+        }
+    }
+    return C;
+}
+
+/* Returns the n x n matrix having ones on main diagonal and zeros elsewhere. */
+Matrix Matrix::identity(int n) {
+    return fromDiag(Vector(n, 1.0F));
+}
+
 /* Returns an m x n matrix with random entries in [0,1]. */
 Matrix Matrix::random(int m, int n) {
-    static bool seeded = false;
-    if (!seeded) {
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
-        seeded = true;
-    }
     Matrix R(m, n);
-    float denom = 1.0F / RAND_MAX;
     for (Vector& c : R) {
-        for (float& entry : c) {
-            entry = std::rand() * denom;
-        }
+        c = Vector::random(m);
     }
     return R;
 }
 
 /* Returns an m x n matrix with random entries in [lo, hi]. */
 Matrix Matrix::random(int m, int n, float lo, float hi) {
-    Matrix R = random(m, n);
-    R *= (hi - lo);
-    R += Matrix(m, n, lo);
-    return R;
+    assert(hi >= lo);
+    return (hi - lo) * random(m, n) + Matrix(m, n, lo);
+}
+
+/** 
+ * Returns the submatrix formed from A by deleting rows and columns
+ * not in rs and cs respectively.
+ */
+Matrix Matrix::whitelist(const Matrix& A, std::set<int> rs, std::set<int> cs) {
+    assert(rs.size() > 0 && rs.size() <= A.rows());
+    assert(cs.size() > 0 && cs.size() <= A.cols());
+    assert(*rs.begin() >= 0 && *--rs.end() < A.rows());
+    assert(*cs.begin() >= 0 && *--cs.end() < A.cols());
+
+    Matrix B(rs.size(), cs.size());
+    int jB = 0;
+    for (int jA = 0; jA < A.cols(); ++jA) {
+        if (cs.find(jA) == cs.end()) {
+            continue;  // column not in scope for inclusion
+        }
+        int iB = 0;
+        for (int iA = 0; iA < A.rows(); ++iA) {
+            if (rs.find(iA) == rs.end()) {
+                continue;  // (iA, jA)-entry not in scope for inclusion
+            }
+            B[jB][iB++] = A[jA][iA];
+        }
+        ++jB;
+    }
+    return B;    
+}
+
+/** 
+ * Returns the submatrix formed from A by deleting rows and columns
+ * in rs and cs respectively.
+ */
+Matrix Matrix::blacklist(const Matrix& A, std::set<int> rs, std::set<int> cs) {
+    assert(rs.size() < A.rows() && cs.size() < A.cols());
+    assert(*rs.begin() >= 0 && *--rs.end() < A.rows());
+    assert(*cs.begin() >= 0 && *--cs.end() < A.cols());
+
+    Matrix B(A.rows() - rs.size(), A.cols() - cs.size());
+    int jB = 0;
+    for (int jA = 0; jA < A.cols(); ++jA) {
+        if (cs.find(jA) != cs.end()) {
+            continue;  // column in scope for exclusion
+        }
+        int iB = 0;
+        for (int iA = 0; iA < A.rows(); ++iA) {
+            if (rs.find(iA) != rs.end()) {
+                continue;  // (iA, jA)-entry in scope for exclusion
+            }
+            B[jB][iB++] = A[jA][iA];
+        }
+        ++jB;
+    }
+    return B;
 }
 
 bool operator==(const Matrix& A, const Matrix& B) {
@@ -221,9 +285,7 @@ Vector operator*(const Matrix& A, const Vector& x) {
     assert(A.cols() == x.size());
     Vector b(A.rows(), 0.0F);
     for (int j = 0; j < A.cols(); ++j) {
-        if (x[j] != 0.0F) {
-            b += x[j] * A[j];
-        }
+        b += x[j] * A[j];
     }
     return b;
 }
@@ -279,9 +341,18 @@ bool approxEqual(const Matrix& A, const Matrix& B, float epsilon) {
     return true;
 }
 
+bool isSquare(const Matrix& A) {
+    return A.rows() == A.cols();
+}
+
+/* Returns true if A is invertible (non-singular), false otherwise. */
+bool isInvertible(const Matrix& A) {
+    return isSquare(A) && !approxEqual(det(A), 0.0F);
+}
+
 /* Returns the kth power of square matrix A. */
 Matrix pow(const Matrix& A, unsigned int k) {
-    return (k == 0 ? Matrix::identity(A.rows()) : A * pow(A, k - 1));
+    return (k == 0) ? Matrix::identity(A.rows()) : A * pow(A, k - 1);
 }
 
 Matrix transpose(const Matrix& A) {
@@ -293,6 +364,53 @@ Matrix transpose(const Matrix& A) {
         }
     }
     return T;
+}
+
+/**
+ * Returns the determinant of square matrix A. 
+ * Computed using Laplace (cofactor) expansion.
+ **/
+float det(const Matrix& A) {
+    assert(isSquare(A));
+    if (A.rows() == 1) {
+        return A[0][0];
+    } else if (A.rows() == 2) {
+        return (A[0][0] * A[1][1]) - (A[0][1] * A[1][0]);
+    }
+
+    // Identify the row (i) with the most zeros.
+    int i = 0;
+    int maxZeros = 0;
+    for (int k = 0; k < A.rows(); ++k) {
+        int zeros = 0;
+        for (int j = 0; j < A.cols(); ++j) {
+            if (A[j][k] == 0.0F) {
+                ++zeros;
+            }
+        }
+        if (zeros > maxZeros) {
+            maxZeros = zeros;
+            i = k;
+        }
+    }
+
+    // Expand the ith row.
+    float sum = 0.0F;
+    for (int j = 0; j < A.cols(); ++j) {
+        if (A[j][i] == 0.0F) {
+            continue;  // no need to compute cofactor -- would be scaled by 0
+        }
+        float minor = det(Matrix::blacklist(A, {i}, {j}));
+        float cofactor = std::pow(-1.0F, i + j) * minor;
+        sum += A[j][i] * cofactor;
+    }
+    return sum;
+}
+
+/* Returns the matrix inverse of (assumed invertible) matrix A. */
+Matrix inverse(const Matrix& A) {
+    // TODO
+    return A;
 }
 
 }  // namespace la

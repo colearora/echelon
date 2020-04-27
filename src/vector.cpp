@@ -2,6 +2,8 @@
 #include "inc/util.h"
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 namespace la {
 
@@ -35,7 +37,12 @@ Vector::~Vector() {
 }
 
 Vector& Vector::operator=(const Vector& v) {
-    assert(_n == v._n);
+    if (_n != v._n) {
+        // This vector must be resized to match v.
+        delete[] _ep;
+        _n = v._n;
+        _ep = new float[_n];
+    }    
     for (int i = 0; i < _n; ++i) {
         _ep[i] = v[i];
     }
@@ -93,6 +100,27 @@ const float* Vector::end() const {
 
 int Vector::size() const {
     return _n;
+}
+
+/* Returns a size-n vector with random entries in [0, 1]. */
+Vector Vector::random(int n) {
+    static bool seeded = false;
+    if (!seeded) {
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        seeded = true;
+    }
+    Vector r(n);
+    float denom = 1.0F / RAND_MAX;
+    for (float& entry : r) {
+        entry = std::rand() * denom;
+    }
+    return r;
+}
+
+/* Returns a size-n vector with random entries in [lo, hi]. */
+Vector Vector::random(int n, float lo, float hi) {
+    assert(hi >= lo);
+    return (hi - lo) * random(n) + Vector(n, lo);
 }
 
 bool operator==(const Vector& v, const Vector& w) {

@@ -32,6 +32,10 @@ public:
 
     int size() const;
 
+    // Factories:
+    static Vector random(int n);
+    static Vector random(int n, float lo, float hi);
+
 private:
     int _n;      // number of entries
     float* _ep;  // pointer to first entry

@@ -43,6 +43,28 @@ TEST_CASE("matrix: iteration", "[matrix]") {
     }
 }
 
+TEST_CASE("matrix: augmentation", "[matrix]") {
+    la::Matrix A(2, 2, 1.0F);
+    la::Vector b(2, 1.0F);
+    la::Matrix aug1 = la::Matrix::fromParts(A, b);
+    REQUIRE(aug1.rows() == 2);
+    REQUIRE(aug1.cols() == 3);
+    for (int j = 0; j < aug1.cols(); ++j) {
+        for (int i = 0; i < aug1.rows(); ++i) {
+            REQUIRE(aug1[j][i] == 1.0F);
+        }
+    }
+    la::Matrix B(2, 2, 1.0F);
+    la::Matrix aug2 = la::Matrix::fromParts(A, B);
+    REQUIRE(aug2.rows() == 2);
+    REQUIRE(aug2.cols() == 4);
+    for (int j = 0; j < aug2.cols(); ++j) {
+        for (int i = 0; i < aug2.rows(); ++i) {
+            REQUIRE(aug2[j][i] == 1.0F);
+        }
+    }
+}
+
 TEST_CASE("matrix: identity", "[matrix]") {
     int n = 4;
     la::Matrix I = la::Matrix::identity(n);
@@ -57,6 +79,53 @@ TEST_CASE("matrix: identity", "[matrix]") {
             }
         }
     }
+}
+
+TEST_CASE("matrix: random", "[matrix]") {
+    int n = 25;
+    REQUIRE(la::Matrix::random(n, n) != la::Matrix::random(n, n));
+}
+
+TEST_CASE("matrix: random in [lo, hi]", "[matrix]") {
+    int n = 4;
+    float lo = 6.0;
+    float hi = 8.0;
+    la::Matrix R = la::Matrix::random(n, n, lo, hi);
+    for (const la::Vector& c : R) {
+        for (float entry : c) {
+            REQUIRE(entry >= lo);
+            REQUIRE(entry <= hi);
+        }
+    }
+}
+
+TEST_CASE("matrix: whitelist", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        { 1,  2,  3,  4,  5},
+        { 6,  7,  8,  9, 10},
+        {11, 12, 13, 14, 15},
+        {16, 17, 18, 19, 20},
+        {21, 22, 23, 24, 25}});
+    REQUIRE(la::Matrix::whitelist(A, {1, 2}, {2, 3}) == la::Matrix::fromRows({
+        { 8,  9},
+        {13, 14}}));
+}
+
+TEST_CASE("matrix: blacklist", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        { 1,  2,  3,  4,  5},
+        { 6,  7,  8,  9, 10},
+        {11, 12, 13, 14, 15},
+        {16, 17, 18, 19, 20},
+        {21, 22, 23, 24, 25}});
+    REQUIRE(la::Matrix::blacklist(A, {0, 1, 2, 3}, {0, 1, 2, 3}) ==
+        la::Matrix::fromRows({{25}}));
+    REQUIRE(la::Matrix::blacklist(A, {1}, {2, 3}) ==
+        la::Matrix::fromRows({
+            { 1,  2,  5},
+            {11, 12, 15},
+            {16, 17, 20},
+            {21, 22, 25}}));
 }
 
 TEST_CASE("matrix: sum and scalar multiple", "[matrix]") {
@@ -95,24 +164,6 @@ TEST_CASE("matrix: matrix-matrix multiplication", "[matrix]") {
     REQUIRE(A * B == la::Matrix::fromRows({
         {11,  0, 21},
         {-1, 13, -9}}));
-}
-
-TEST_CASE("matrix: random", "[matrix]") {
-    int n = 25;
-    REQUIRE(la::Matrix::random(n, n) != la::Matrix::random(n, n));
-}
-
-TEST_CASE("matrix: random in [lo, hi]", "[matrix]") {
-    int n = 4;
-    float lo = 6.0;
-    float hi = 8.0;
-    la::Matrix R = la::Matrix::random(n, n, lo, hi);
-    for (const la::Vector& c : R) {
-        for (float entry : c) {
-            REQUIRE(entry >= lo);
-            REQUIRE(entry <= hi);
-        }
-    }
 }
 
 TEST_CASE("matrix: small power", "[matrix]") {
@@ -154,4 +205,43 @@ TEST_CASE("matrix: transpose", "[matrix]") {
     REQUIRE(la::transpose(A + B) == la::transpose(A) + la::transpose(B));
     REQUIRE(la::transpose(3.14F * A) == 3.14F * la::transpose(A));
     REQUIRE(la::transpose(A * C) == la::transpose(C) * la::transpose(A));
+}
+
+TEST_CASE("matrix: determinant", "[matrix]") {
+    la::Matrix A = la::Matrix::fromRows({
+        {1, 2},
+        {3, 4}});
+    la::Matrix B = la::Matrix::fromRows({
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}});
+    la::Matrix C = la::Matrix::fromRows({
+        {1, 3, 5, 9},
+        {1, 3, 1, 7},
+        {4, 3, 9, 7},
+        {5, 2, 0, 9}});
+    la::Matrix D = la::Matrix::fromRows({
+        {3, 1, 4, 1, 5, 9, 2, 6},
+        {5, 3, 5, 8, 9, 7, 9, 3},
+        {2, 3, 8, 4, 6, 2, 6, 4},
+        {3, 3, 8, 3, 2, 7, 9, 5},
+        {0, 2, 8, 8, 4, 1, 9, 7},
+        {1, 6, 9, 3, 9, 9, 3, 7},
+        {5, 1, 0, 5, 8, 2, 0, 9},
+        {7, 4, 9, 4, 4, 5, 9, 2}});
+    la::Matrix E = la::Matrix::fromRows({
+        {3, 1, 4, 1, 5, 9, 2, 6},
+        {5, 3, 5, 8, 9, 7, 9, 3},
+        {2, 3, 8, 4, 6, 2, 6, 4},
+        {3, 3, 8, 3, 2, 7, 9, 5},
+        {0, 2, 8, 8, 4, 1, 9, 7},
+        {1, 6, 9, 3, 9, 9, 3, 7},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {7, 4, 9, 4, 4, 5, 9, 2}});
+
+    REQUIRE(la::det(A) == -2.0F);
+    REQUIRE(la::det(B) == 0.0F);
+    REQUIRE(la::det(C) == -376.0F);
+    REQUIRE(la::det(D) == 1378143.0F);
+    REQUIRE(la::det(E) == 0.0F);
 }
