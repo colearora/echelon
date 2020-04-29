@@ -2,15 +2,17 @@
 #define LA_GAUSSIAN_H
 
 #include "inc/matrix.h"
+#include <limits>
 
-namespace la {
+namespace la
+{
 
 // Gaussian elimination:
-void eliminate(Matrix& A);
+void eliminate(Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
 
-void normalizeRows(Matrix& A);
-void forwardReduce(Matrix& A, int i, int j);
-void backwardReduce(Matrix& A, int i, int j);
+void normalizeRows(Matrix& A, float epsilon);
+void forwardReduce(Matrix& A, int i, int j, float epsilon);
+void backwardReduce(Matrix& A, int i, int j, float epsilon);
 
 // Elementary row operations:
 void swapRows(Matrix& A, int i1, int i2);

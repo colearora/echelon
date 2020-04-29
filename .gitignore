@@ -1,2 +1,3 @@
 # Exclude binary files
 bin/*
+test/testdriver.o

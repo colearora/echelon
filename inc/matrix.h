@@ -8,12 +8,14 @@
 #include <limits>
 #include <set>
 
-namespace la {
+namespace la
+{
 
 /**
  * Matrix: represents a two-dimensional (m x n) grid of floating-point values.
  */
-class Matrix {
+class Matrix
+{
 public:
     Matrix(int m, int n);
     Matrix(int m, int n, float initVal);
@@ -44,8 +46,6 @@ public:
     static Matrix identity(int n);
     static Matrix random(int m, int n);
     static Matrix random(int m, int n, float lo, float hi);
-    static Matrix whitelist(const Matrix& A, std::set<int> rs, std::set<int> cs);
-    static Matrix blacklist(const Matrix& A, std::set<int> rs, std::set<int> cs);
 
 private:
     int _m;       // number of rows
@@ -68,13 +68,10 @@ Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilo
 bool approxEqual(const Matrix& A, const Matrix& B,
                  float epsilon = std::numeric_limits<float>::epsilon());
 
-bool isSquare(const Matrix& A);
-bool isInvertible(const Matrix& A);
-
 Matrix pow(const Matrix& A, unsigned int k);
 Matrix transpose(const Matrix& A);
 float det(const Matrix& A);
-Matrix inverse(const Matrix& A);
+bool inverse(const Matrix& A, Matrix& AInv);
 
 }  // namespace la
 

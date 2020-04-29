@@ -3,7 +3,8 @@
 
 #include <limits>
 
-namespace la {
+namespace la
+{
 
 bool approxEqual(float x, float y, float epsilon = std::numeric_limits<float>::epsilon());
 

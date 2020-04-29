@@ -2,9 +2,11 @@
 #include <cmath>  // abs()
 #include <cassert>
 
-namespace la {
+namespace la
+{
 
-bool approxEqual(float x, float y, float epsilon) {
+bool approxEqual(float x, float y, float epsilon)
+{
     return std::abs(x - y) <= (std::abs(x) + std::abs(y) + 1.0F) * epsilon;
 }
 

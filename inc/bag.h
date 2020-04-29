@@ -1,7 +1,8 @@
 #ifndef LA_BAG_H
 #define LA_BAG_H
 
-namespace la {
+namespace la
+{
 
 /**
  * Bag: a generic, unsorted, dynamically resizing container of objects
@@ -11,46 +12,71 @@ namespace la {
  * by the Bag.
  */
 template <typename T>
-class Bag {
+class Bag
+{
 public:
-    Bag() : _n{0}, _cap{1}, _items{new T*[1]}, _owns{new bool[1]} {}
-    ~Bag() {
-        for (int i = 0; i < _n; ++i) {
-            if (_owns[i]) {
+    Bag()
+    : _n{0},
+      _cap{1},
+      _items{new T*[1]},
+      _owns{new bool[1]}
+    {}
+
+    ~Bag()
+    {
+        for (int i = 0; i < _n; ++i)
+        {
+            if (_owns[i])
+            {
                 delete _items[i];
             }
         }
         delete[] _items;
         delete[] _owns;
     }
-    void add(T& r) {
+
+    void add(T& r)
+    {
         checkSize();
         _items[_n] = &r;
         _owns[_n] = false;
         ++_n;
     }
-    void add(T* p) {
+
+    void add(T* p)
+    {
         checkSize();
         _items[_n] = p;
         _owns[_n] = true;
         ++_n;
     }
-    const T& operator[](int i) {
+
+    const T& operator[](int i)
+    {
         assert(i >= 0 && i < _n);
         return *(_items[i]);
     }
-    int size() const {return _n;}
+
+    int size() const
+    {
+        return _n;
+    }
 
 private:
-    void checkSize() {
-        if (_n == _cap) {
+    void checkSize()
+    {
+        if (_n == _cap)
+        {
             resize(2 * _cap);
         }
     }
-    void resize(int newCap) {
+
+    void resize(int newCap)
+    {
         T** newItems = new T*[newCap];
         bool* newOwns = new bool[newCap];
-        for (int i = 0; i < _n; ++i) {
+        for (int i = 0; i < _n; ++i)
+        {
             newItems[i] = _items[i];
             newOwns[i] = _owns[i];
         }
@@ -60,6 +86,7 @@ private:
         _owns = newOwns;
         _cap = newCap;
     }
+
     int _n, _cap;
     T** _items;
     bool* _owns;

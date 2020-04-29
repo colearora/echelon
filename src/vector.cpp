@@ -5,187 +5,238 @@
 #include <cstdlib>
 #include <ctime>
 
-namespace la {
+namespace la
+{
 
-Vector::Vector(int n) {
+Vector::Vector(int n)
+{
     assert(n > 0);
     _n = n;
     _ep = new float[n];
 }
 
-Vector::Vector(int n, float initVal) : Vector(n) {
-    for (int i = 0; i < _n; ++i) {
+Vector::Vector(int n, float initVal)
+: Vector(n)
+{
+    for (int i = 0; i < _n; ++i)
+    {
         _ep[i] = initVal;
     }
 }
 
-Vector::Vector(std::initializer_list<float> list) : Vector(list.size()) {
+Vector::Vector(std::initializer_list<float> list)
+: Vector(list.size())
+{
     int i = 0;
-    for (float val : list) {
+    for (float val : list)
+    {
         _ep[i++] = val;
     }
 }
 
-Vector::Vector(const Vector& v) : Vector(v._n) {
-    for (int i = 0; i < _n; ++i) {
+Vector::Vector(const Vector& v)
+: Vector(v._n)
+{
+    for (int i = 0; i < _n; ++i)
+    {
         _ep[i] = v[i];
     }
 }
 
-Vector::~Vector() {
+Vector::~Vector()
+{
     delete[] _ep;
 }
 
-Vector& Vector::operator=(const Vector& v) {
-    if (_n != v._n) {
+Vector& Vector::operator=(const Vector& v)
+{
+    if (_n != v._n)
+    {
         // This vector must be resized to match v.
         delete[] _ep;
         _n = v._n;
         _ep = new float[_n];
-    }    
-    for (int i = 0; i < _n; ++i) {
+    }
+    for (int i = 0; i < _n; ++i)
+    {
         _ep[i] = v[i];
     }
     return *this;
 }
 
-Vector& Vector::operator+=(const Vector& v) {
+Vector& Vector::operator+=(const Vector& v)
+{
     assert(_n == v._n);
-    for (int i = 0; i < _n; ++i) {
+    for (int i = 0; i < _n; ++i)
+    {
         _ep[i] += v[i];
     }
     return *this;
 }
 
-Vector& Vector::operator-=(const Vector& v) {
+Vector& Vector::operator-=(const Vector& v)
+{
     assert(_n == v._n);
-    for (int i = 0; i < _n; ++i) {
+    for (int i = 0; i < _n; ++i)
+    {
         _ep[i] -= v[i];
     }
     return *this;
 }
 
-Vector& Vector::operator*=(float x) {
-    for (int i = 0; i < _n; ++i) {
+Vector& Vector::operator*=(float x)
+{
+    for (int i = 0; i < _n; ++i)
+    {
         _ep[i] *= x;
     }
     return *this;
 }
 
-float& Vector::operator[](int i) {
+float& Vector::operator[](int i)
+{
     assert(i >= 0 && i < _n);
     return _ep[i];
 }
 
-const float& Vector::operator[](int i) const {
+const float& Vector::operator[](int i) const
+{
     assert(i >= 0 && i < _n);
     return _ep[i];
 }
 
-float* Vector::begin() {
+float* Vector::begin()
+{
     return _ep;
 }
 
-const float* Vector::begin() const {
+const float* Vector::begin() const
+{
     return _ep;
 }
 
-float* Vector::end() {
+float* Vector::end()
+{
     return _ep + _n;
 }
 
-const float* Vector::end() const {
+const float* Vector::end() const
+{
     return _ep + _n;
 }
 
-int Vector::size() const {
+int Vector::size() const
+{
     return _n;
 }
 
-/* Returns a size-n vector with random entries in [0, 1]. */
-Vector Vector::random(int n) {
+Vector Vector::random(int n)
+{
     static bool seeded = false;
-    if (!seeded) {
+    if (!seeded)
+    {
         std::srand(static_cast<unsigned int>(std::time(nullptr)));
         seeded = true;
     }
     Vector r(n);
     float denom = 1.0F / RAND_MAX;
-    for (float& entry : r) {
+    for (float& entry : r)
+    {
         entry = std::rand() * denom;
     }
     return r;
 }
 
-/* Returns a size-n vector with random entries in [lo, hi]. */
-Vector Vector::random(int n, float lo, float hi) {
+Vector Vector::random(int n, float lo, float hi)
+{
     assert(hi >= lo);
     return (hi - lo) * random(n) + Vector(n, lo);
 }
 
-bool operator==(const Vector& v, const Vector& w) {
-    if (&v == &w) {
+bool operator==(const Vector& v, const Vector& w)
+{
+    if (&v == &w)
+    {
         return true;
-    } else if (v.size() != w.size()) {
+    }
+    else if (v.size() != w.size())
+    {
         return false;
     }
-    for (int i = 0, n = v.size(); i < n; ++i) {
-        if (v[i] != w[i]) {
+    for (int i = 0, n = v.size(); i < n; ++i)
+    {
+        if (v[i] != w[i])
+        {
             return false;
         }
     }
     return true;
 }
 
-bool operator!=(const Vector& v, const Vector& w) {
+bool operator!=(const Vector& v, const Vector& w)
+{
     return !(v == w);
 }
 
-Vector operator+(const Vector& v, const Vector& w) {
+Vector operator+(const Vector& v, const Vector& w)
+{
     return Vector(v) += w;
 }
 
-Vector operator-(const Vector& v, const Vector& w) {
+Vector operator-(const Vector& v, const Vector& w)
+{
     return Vector(v) -= w;
 }
 
-Vector operator*(const Vector& v, float x) {
+Vector operator*(const Vector& v, float x)
+{
     return Vector(v) *= x;
 }
 
-Vector operator*(float x, const Vector& v) {
+Vector operator*(float x, const Vector& v)
+{
     return Vector(v) *= x;
 }
 
-std::ostream& operator<<(std::ostream& os, const Vector& v) {
+std::ostream& operator<<(std::ostream& os, const Vector& v)
+{
     os << "(";
-    for (int i = 0; i < v.size(); ++i) {
+    for (int i = 0; i < v.size(); ++i)
+    {
         os << (i > 0 ? ", " : "") << v[i];
     }
     os << ")";
     return os;
 }
 
-Vector round(const Vector& v, float epsilon) {
+Vector round(const Vector& v, float epsilon)
+{
     Vector w(v);
-    for (float& entry : w) {
+    for (float& entry : w)
+    {
         float rounded = std::round(entry);  // to nearest integer
-        if (rounded == -0.0F) {
+        if (rounded == -0.0F)
+        {
             rounded = 0.0F;
         }
-        if (approxEqual(entry, rounded, epsilon)) {
+        if (approxEqual(entry, rounded, epsilon))
+        {
             entry = rounded;
         }
     }
     return w;
 }
 
-bool approxEqual(const Vector& v, const Vector& w, float epsilon) {
-    if (v.size() != w.size()) {
+bool approxEqual(const Vector& v, const Vector& w, float epsilon)
+{
+    if (v.size() != w.size())
+    {
         return false;
     }
-    for (int i = 0; i < v.size(); ++i) {
-        if (!approxEqual(v[i], w[i], epsilon)) {
+    for (int i = 0; i < v.size(); ++i)
+    {
+        if (!approxEqual(v[i], w[i], epsilon))
+        {
             return false;
         }
     }

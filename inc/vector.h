@@ -5,12 +5,14 @@
 #include <utility>
 #include <limits>
 
-namespace la {
+namespace la
+{
 
 /**
  * Vector: represents a one-dimensional sequence of floating-point values.
  */
-class Vector {
+class Vector
+{
 public:
     explicit Vector(int n);
     Vector(int n, float initVal);
