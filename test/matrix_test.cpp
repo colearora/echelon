@@ -133,6 +133,21 @@ TEST_CASE("matrix: matrix-matrix multiplication", "[matrix]")
         }));
 }
 
+TEST_CASE("matrix: augment", "[matrix]")
+{
+    // TODO
+}
+
+TEST_CASE("matrix: delete", "[matrix]")
+{
+    // TODO
+}
+
+TEST_CASE("matrix: partition", "[matrix]")
+{
+    // TODO
+}
+
 TEST_CASE("matrix: random", "[matrix]")
 {
     int n = 25;
@@ -209,4 +224,14 @@ TEST_CASE("matrix: transpose", "[matrix]")
     REQUIRE(la::transpose(A + B) == la::transpose(A) + la::transpose(B));
     REQUIRE(la::transpose(3.14F * A) == 3.14F * la::transpose(A));
     REQUIRE(la::transpose(A * C) == la::transpose(C) * la::transpose(A));
+}
+
+TEST_CASE("matrix: determinant", "[matrix]")
+{
+    // TODO
+}
+
+TEST_CASE("matrix: inverse", "[matrix]")
+{
+    // TODO
 }

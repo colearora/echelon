@@ -50,13 +50,7 @@ Vector::~Vector()
 
 Vector& Vector::operator=(const Vector& v)
 {
-    if (_n != v._n)
-    {
-        // This vector must be resized to match v.
-        delete[] _ep;
-        _n = v._n;
-        _ep = new float[_n];
-    }
+    assert(_n == v._n);
     for (int i = 0; i < _n; ++i)
     {
         _ep[i] = v[i];

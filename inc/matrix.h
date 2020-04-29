@@ -41,8 +41,6 @@ public:
     static Matrix fromRows(std::initializer_list<Vector> rlist);
     static Matrix fromCols(std::initializer_list<Vector> clist);
     static Matrix fromDiag(const Vector& d);
-    static Matrix fromParts(const Matrix& A, const Vector& b);
-    static Matrix fromParts(const Matrix& A, const Matrix& B);
     static Matrix identity(int n);
     static Matrix random(int m, int n);
     static Matrix random(int m, int n, float lo, float hi);
@@ -67,6 +65,14 @@ std::ostream& operator<<(std::ostream& os, const Matrix& A);
 Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
 bool approxEqual(const Matrix& A, const Matrix& B,
                  float epsilon = std::numeric_limits<float>::epsilon());
+
+Matrix augment(const Matrix& A, const Vector& b);
+Matrix augment(const Matrix& A, const Matrix& B);
+Matrix deleteRow(const Matrix& A, int i);
+Matrix deleteCol(const Matrix& A, int j);
+Matrix deleteRowAndCol(const Matrix& A, int i, int j);
+Matrix partition(const Matrix& A, std::pair<int, int> topLeft,
+                 std::pair<int, int> bottomRight);
 
 Matrix pow(const Matrix& A, unsigned int k);
 Matrix transpose(const Matrix& A);

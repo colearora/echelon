@@ -1,5 +1,6 @@
 #include "inc/matrix.h"
 #include "inc/util.h"
+#include "inc/gaussian.h"
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -187,27 +188,6 @@ Matrix Matrix::fromDiag(const Vector& d)
     return D;
 }
 
-Matrix Matrix::fromParts(const Matrix& A, const Vector& b)
-{
-    return fromParts(A, fromCols({b}));
-}
-
-Matrix Matrix::fromParts(const Matrix& A, const Matrix& B)
-{
-    assert(A.rows() == B.rows());
-    int m = A.rows();
-    int n = A.cols() + B.cols();
-    Matrix C(m, n);
-    for (int j = 0; j < n; ++j)
-    {
-        for (int i = 0; i < m; ++i)
-        {
-            C[j][i] = (j < A.cols()) ? A[j][i] : B[j - A.cols()][i];
-        }
-    }
-    return C;
-}
-
 Matrix Matrix::identity(int n)
 {
     return fromDiag(Vector(n, 1.0F));
@@ -348,6 +328,94 @@ bool approxEqual(const Matrix& A, const Matrix& B, float epsilon)
     }
     return true;
 }
+
+Matrix augment(const Matrix& A, const Vector& b)
+{
+    return augment(A, fromCols({b}));
+}
+
+Matrix augment(const Matrix& A, const Matrix& B)
+{
+    assert(A.rows() == B.rows());
+    int m = A.rows();
+    int n = A.cols() + B.cols();
+    Matrix aug(m, n);
+    for (int j = 0; j < n; ++j)
+    {
+        for (int i = 0; i < m; ++i)
+        {
+            aug[j][i] = (j < A.cols()) ? A[j][i] : B[j - A.cols()][i];
+        }
+    }
+    return aug;
+}
+
+Matrix deleteRow(const Matrix& A, int i)
+{
+    assert(i >= 0 && i < A.rows());
+    Matrix B(A.rows() - 1, A.cols());
+    int iB = 0;
+    for (int iA = 0; iA < A.rows(); ++iA)
+    {
+        if (iA == i)
+        {
+            continue;
+        }
+        for (int j = 0; j < A.cols(); ++j)
+        {
+            B[j][iB] = A[j][iA];
+        }
+        ++iB;
+    }
+    return B;
+}
+
+Matrix deleteCol(const Matrix& A, int j)
+{
+    assert(j >= 0 && j < A.cols());
+    Matrix B(A.rows(), A.cols() - 1);
+    int jB = 0;
+    for (int jA = 0; jA < A.cols(); ++jA)
+    {
+        if (jA == j)
+        {
+            continue;
+        }
+        B[jB] = A[jA];
+        ++jB;
+    }
+    return B;
+}
+
+Matrix deleteRowAndCol(const Matrix& A, int i, int j)
+{
+    assert(i >= 0 && i < A.rows() && j >= 0 && j < A.cols());
+    Matrix B(A.rows() - 1, A.cols() - 1);
+    int jB = 0;
+    for (int jA = 0; jA < A.cols(); ++jA)
+    {
+        if (jA == j)
+        {
+            continue;
+        }
+        int iB = 0;
+        for (int iA = 0; iA < A.rows(); ++iA)
+        {
+            if (iA == i)
+            {
+                continue;
+            }
+            B[jB][iB] = A[jA][iA];
+            ++iB;
+        }
+        ++jB;
+    }
+    return B;
+}
+
+Matrix partition(const Matrix& A, std::pair<int, int> topLeft,
+                 std::pair<int, int> bottomRight)
+{}
 
 Matrix pow(const Matrix& A, unsigned int k)
 {
