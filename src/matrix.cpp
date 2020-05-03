@@ -331,7 +331,7 @@ bool approxEqual(const Matrix& A, const Matrix& B, float epsilon)
 
 Matrix augment(const Matrix& A, const Vector& b)
 {
-    return augment(A, fromCols({b}));
+    return augment(A, Matrix::fromCols({b}));
 }
 
 Matrix augment(const Matrix& A, const Matrix& B)
@@ -415,7 +415,10 @@ Matrix deleteRowAndCol(const Matrix& A, int i, int j)
 
 Matrix partition(const Matrix& A, std::pair<int, int> topLeft,
                  std::pair<int, int> bottomRight)
-{}
+{
+    // TODO
+    return A;
+}
 
 Matrix pow(const Matrix& A, unsigned int k)
 {

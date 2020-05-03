@@ -135,9 +135,10 @@ void scaleRow(Matrix& A, int i, float f)
     // std::cerr << A << std::endl;
 }
 
-void replaceRow(Matrix& A, int i1, int i2, float f)
+void replaceRow(Matrix& A, int i1, int i2, float f, int lo)
 {
-    for (int j = 0; j < A.cols(); ++j)
+    assert(lo >= 0);
+    for (int j = lo; j < A.cols(); ++j)
     {
         A[j][i1] += f * A[j][i2];
     }

@@ -17,7 +17,7 @@ void backwardReduce(Matrix& A, int i, int j, float epsilon);
 // Elementary row operations:
 void swapRows(Matrix& A, int i1, int i2);
 void scaleRow(Matrix& A, int i, float f);
-void replaceRow(Matrix& A, int i1, int i2, float f);
+void replaceRow(Matrix& A, int i1, int i2, float f, int lo = 0);
 
 }  // namespace la
 

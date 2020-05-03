@@ -136,7 +136,7 @@ Vector Vector::random(int n)
     float denom = 1.0F / RAND_MAX;
     for (float& entry : r)
     {
-        entry = std::rand() * denom;
+        entry = std::rand() * denom;  // in [0, 1]
     }
     return r;
 }
