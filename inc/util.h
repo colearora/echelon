@@ -1,13 +1,10 @@
-#ifndef LA_UTIL_H
-#define LA_UTIL_H
-
-#include <limits>
+#pragma once
 
 namespace la
 {
 
-bool approxEqual(float x, float y, float epsilon = std::numeric_limits<float>::epsilon());
+constexpr float DEFAULT_EPSILON = 1e-5F;
+
+bool approxEqual(float x, float y, float epsilon = DEFAULT_EPSILON);
 
 }  // namespace la
-
-#endif

@@ -135,7 +135,23 @@ TEST_CASE("matrix: matrix-matrix multiplication", "[matrix]")
 
 TEST_CASE("matrix: augment", "[matrix]")
 {
-    // TODO
+    la::Matrix A = la::Matrix::fromRows(
+        {
+            {1, 2},
+            {3, 4}
+        });
+    la::Vector b(2, 0.0F);
+    REQUIRE(la::augment(A, b) == la::Matrix::fromRows(
+        {
+            {1, 2, 0},
+            {3, 4, 0}
+        }));
+    la::Matrix I = la::Matrix::identity(2);
+    REQUIRE(la::augment(A, I) == la::Matrix::fromRows(
+        {
+            {1, 2, 1, 0},
+            {3, 4, 0, 1}
+        }));
 }
 
 TEST_CASE("matrix: delete", "[matrix]")
@@ -145,7 +161,23 @@ TEST_CASE("matrix: delete", "[matrix]")
 
 TEST_CASE("matrix: partition", "[matrix]")
 {
-    // TODO
+    la::Matrix A = la::Matrix::fromRows(
+        {
+            { 1,  2,  3,  4},
+            { 5,  6,  7,  8},
+            { 9, 10, 11, 12},
+            {13, 14, 15, 16}
+        });
+    la::Matrix B1 = la::partition(A, {0, 0}, {0, 0});
+    REQUIRE(B1 == la::Matrix::fromRows({{1}}));
+    la::Matrix B2 = la::partition(A, {0, 0}, {A.rows() - 1, A.cols() - 1});
+    REQUIRE(B2 == A);
+    la::Matrix B3 = la::partition(A, {2, 2}, {3, 3});
+    REQUIRE(B3 == la::Matrix::fromRows(
+        {
+            {11, 12},
+            {15, 16}
+        }));
 }
 
 TEST_CASE("matrix: random", "[matrix]")
@@ -226,12 +258,84 @@ TEST_CASE("matrix: transpose", "[matrix]")
     REQUIRE(la::transpose(A * C) == la::transpose(C) * la::transpose(A));
 }
 
-TEST_CASE("matrix: determinant", "[matrix]")
+TEST_CASE("matrix: 2x2 inverse", "[matrix]")
 {
-    // TODO
+    la::Matrix A = la::Matrix::fromRows(
+        {
+            {3, 4},
+            {5, 6}
+        });
+    la::Matrix AInv(A.rows(), A.cols());
+    bool invertible = inverse(A, AInv);
+    REQUIRE(invertible);
+    REQUIRE(la::approxEqual(AInv, la::Matrix::fromRows(
+        {
+            {      -3,         2},
+            {5.0F / 2, -3.0F / 2}
+        })));
 }
 
-TEST_CASE("matrix: inverse", "[matrix]")
+TEST_CASE("matrix: 3x3 inverse", "[matrix]")
+{
+    la::Matrix A = la::Matrix::fromRows(
+        {
+            {0,  1, 2},
+            {1,  0, 3},
+            {4, -3, 8}
+        });
+    la::Matrix AInv(A.rows(), A.cols());
+    bool invertible = inverse(A, AInv);
+    REQUIRE(invertible);
+    REQUIRE(la::approxEqual(AInv, la::Matrix::fromRows(
+        {
+            {-9.0F / 2,  7, -3.0F / 2},
+            {       -2,  4,        -1},
+            { 3.0F / 2, -2,  1.0F / 2}
+        })));
+}
+
+TEST_CASE("matrix: 4x4 inverse", "[matrix]")
+{
+    la::Vector y{0.08F, 0.12F, 0.16F, 0.12F};
+    la::Matrix D = la::Matrix::fromRows(
+        {
+            {0.0040F, 0.0030F, 0.0010F, 0.0005F},
+            {0.0030F, 0.0050F, 0.0030F, 0.0010F},
+            {0.0010F, 0.0030F, 0.0050F, 0.0030F},
+            {0.0005F, 0.0010F, 0.0030F, 0.0040F}
+        });
+    la::Vector f{12.0F, 1.5F, 21.5F, 12.0F};
+    la::Matrix DInv(D.rows(), D.cols());
+    bool invertible = la::inverse(D, DInv);
+    REQUIRE(invertible);
+    REQUIRE(approxEqual(DInv * y, f));
+}
+
+TEST_CASE("matrix: 5x5 inverse", "[matrix]")
+{
+    la::Matrix A = la::Matrix::fromRows(
+        {
+            {1, 2, 0, 0, 0},
+            {3, 5, 0, 0, 0},
+            {0, 0, 2, 0, 0},
+            {0, 0, 0, 7, 8},
+            {0, 0, 0, 5, 6}
+        });
+    la::Matrix AInv(A.rows(), A.cols());
+    bool invertible = la::inverse(A, AInv);
+    REQUIRE(invertible);
+    std::cerr << AInv << std::endl;
+    REQUIRE(la::approxEqual(AInv, la::Matrix::fromRows(
+        {
+            {-5,  2,        0,         0,        0},
+            { 3, -1,        0,         0,        0},
+            { 0,  0, 1.0F / 2,         0,        0},
+            { 0,  0,        0,         3,       -4},
+            { 0,  0,        0, -5.0F / 2, 7.0F / 2}
+        })));
+}
+
+TEST_CASE("matrix: determinant", "[matrix]")
 {
     // TODO
 }

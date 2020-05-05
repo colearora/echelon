@@ -1,5 +1,4 @@
-#ifndef LA_BAG_H
-#define LA_BAG_H
+#pragma once
 
 namespace la
 {
@@ -93,5 +92,3 @@ private:
 };
 
 }  // namespace la
-
-#endif

@@ -1,6 +1,6 @@
 #include "inc/matrix.h"
 #include "inc/util.h"
-#include "inc/gaussian.h"
+#include "inc/gauss.h"
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -215,7 +215,7 @@ bool operator==(const Matrix& A, const Matrix& B)
     {
         return true;
     }
-    else if (A.rows() != B.rows() || A.cols() != B.cols())
+    if (A.rows() != B.rows() || A.cols() != B.cols())
     {
         return false;
     }
@@ -315,6 +315,10 @@ Matrix round(const Matrix& A, float epsilon)
 
 bool approxEqual(const Matrix& A, const Matrix& B, float epsilon)
 {
+    if (&A == &B)
+    {
+        return true;
+    }
     if (A.rows() != B.rows() || A.cols() != B.cols())
     {
         return false;
@@ -416,8 +420,29 @@ Matrix deleteRowAndCol(const Matrix& A, int i, int j)
 Matrix partition(const Matrix& A, std::pair<int, int> topLeft,
                  std::pair<int, int> bottomRight)
 {
-    // TODO
-    return A;
+    int m = bottomRight.first - topLeft.first + 1;
+    int n = bottomRight.second - topLeft.second + 1;
+    assert(m > 0 && m <= A.rows() && n > 0 && n <= A.cols());
+    Matrix B(m, n);
+    for (int j = 0; j < n; ++j)
+    {
+        for (int i = 0; i < m; ++i)
+        {
+            B[j][i] = A[topLeft.second + j][topLeft.first + i];
+        }
+    }
+    return B;
+}
+
+bool isSquare(const Matrix& A)
+{
+    return A.rows() == A.cols();
+}
+
+bool isInvertible(const Matrix& A)
+{
+    Matrix temp(A.rows(), A.cols());
+    return inverse(A, temp);
 }
 
 Matrix pow(const Matrix& A, unsigned int k)
@@ -439,16 +464,41 @@ Matrix transpose(const Matrix& A)
     return T;
 }
 
+/**
+ * Attempts to invert A.
+ * If A is invertible, writes inverse to AInv and returns true,
+ * otherwise returns false.
+ */
+bool inverse(const Matrix& A, Matrix& AInv)
+{
+    assert(A.rows() == AInv.rows() && A.cols() == AInv.cols());
+    if (!isSquare(A))
+    {
+        return false;
+    }
+
+    // By the Invertible Matrix Theorem, A is invertible iff A ~ I.
+    // In that case the row operations that reduce A to I convert I to A's inverse.
+    // Thus, strategy is to reduce [A I] to reduced echelon form.
+    int n = A.rows();
+    Matrix I = Matrix::identity(n);
+    Matrix aug = augment(A, I);
+    eliminate(aug, partialPivotSelector);
+    if (approxEqual(partition(aug, {0, 0}, {n - 1, n - 1}), I))
+    {
+        AInv = partition(aug, {0, n}, {n - 1, 2 * n - 1});
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 float det(const Matrix& A)
 {
     // TODO
     return 0.0F;
-}
-
-bool inverse(const Matrix& A, Matrix& AInv)
-{
-    // TODO
-    return false;
 }
 
 }  // namespace la

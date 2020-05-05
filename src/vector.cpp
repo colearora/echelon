@@ -153,7 +153,7 @@ bool operator==(const Vector& v, const Vector& w)
     {
         return true;
     }
-    else if (v.size() != w.size())
+    if (v.size() != w.size())
     {
         return false;
     }
@@ -223,6 +223,10 @@ Vector round(const Vector& v, float epsilon)
 
 bool approxEqual(const Vector& v, const Vector& w, float epsilon)
 {
+    if (&v == &w)
+    {
+        return true;
+    }
     if (v.size() != w.size())
     {
         return false;
@@ -235,6 +239,30 @@ bool approxEqual(const Vector& v, const Vector& w, float epsilon)
         }
     }
     return true;
+}
+
+Vector homogenize(const Vector& v)
+{
+    int n = v.size();
+    Vector w(n + 1);
+    for (int i = 0; i < n; ++i)
+    {
+        w[i] = v[i];
+    }
+    w[n] = 1.0F;
+    return w;
+}
+
+Vector dehomogenize(const Vector& v)
+{
+    int n = v.size();
+    assert(n > 0 && v[n - 1] != 0.0F);
+    Vector w(n - 1);
+    for (int i = 0; i < n - 1; ++i)
+    {
+        w[i] = v[i] / v[n - 1];
+    }
+    return w;
 }
 
 }  // namespace la

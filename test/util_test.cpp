@@ -12,16 +12,17 @@ TEST_CASE("util: approxEqual", "[util]")
             {0.01F, false},
             {0.001F, false},
             {0.0001F, false},
-            {0.00001F, false},
-            {0.000001F, false},
+            {0.00001F, true},
+            {0.000001F, true},
             {0.0000001F, true},
-            {0.00000001F, true},
             {0.0F, true}
         };
 
     for (auto test : tests)
     {
-        // std::cerr << test.first << " " << la::approxEqual(test.first, 0.0F) << std::endl;
-        REQUIRE(la::approxEqual(test.first, 0.0F) == test.second);
+        float f = test.first;
+        bool b = test.second;
+        // std::cerr << f << " " << la::approxEqual(f, 0) << std::endl;
+        REQUIRE(la::approxEqual(f, 0) == b);
     }
 }

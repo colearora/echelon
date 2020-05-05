@@ -48,3 +48,13 @@ TEST_CASE("vector: iteration", "[vector]")
         REQUIRE(v[i] == 1.0F);
     }
 }
+
+TEST_CASE("vector: homogeneous coordinates", "[vector]")
+{
+    la::Vector v{5, -3, 7};
+    REQUIRE(la::homogenize(v) == la::Vector{5, -3, 7, 1});
+    REQUIRE(la::dehomogenize(la::Vector{5, -3, 7, 1}) == v);
+    REQUIRE(la::dehomogenize(la::Vector{10, -6, 14, 2}) == v);
+    REQUIRE(la::dehomogenize(la::Vector{-15, 9, -21, -3}) == v);
+    REQUIRE(la::dehomogenize(la::homogenize(v)) == v);
+}

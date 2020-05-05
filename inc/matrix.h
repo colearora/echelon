@@ -1,12 +1,9 @@
-#ifndef LA_MATRIX_H
-#define LA_MATRIX_H
+#pragma once
 
+#include "inc/util.h"
 #include "inc/vector.h"
-#include <utility>
 #include <initializer_list>
 #include <iostream>
-#include <limits>
-#include <set>
 
 namespace la
 {
@@ -62,9 +59,9 @@ Vector operator*(const Matrix& A, const Vector& x);
 Matrix operator*(const Matrix& A, const Matrix& B);
 std::ostream& operator<<(std::ostream& os, const Matrix& A);
 
-Matrix round(const Matrix& A, float epsilon = std::numeric_limits<float>::epsilon());
+Matrix round(const Matrix& A, float epsilon = DEFAULT_EPSILON);
 bool approxEqual(const Matrix& A, const Matrix& B,
-                 float epsilon = std::numeric_limits<float>::epsilon());
+                 float epsilon = DEFAULT_EPSILON);
 
 Matrix augment(const Matrix& A, const Vector& b);
 Matrix augment(const Matrix& A, const Matrix& B);
@@ -74,11 +71,13 @@ Matrix deleteRowAndCol(const Matrix& A, int i, int j);
 Matrix partition(const Matrix& A, std::pair<int, int> topLeft,
                  std::pair<int, int> bottomRight);
 
+bool isSquare(const Matrix& A);
+bool isInvertible(const Matrix& A);
+
 Matrix pow(const Matrix& A, unsigned int k);
 Matrix transpose(const Matrix& A);
-float det(const Matrix& A);
 bool inverse(const Matrix& A, Matrix& AInv);
+float det(const Matrix& A);
 
 }  // namespace la
 
-#endif

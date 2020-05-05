@@ -1,9 +1,8 @@
-#ifndef LA_VECTOR_H
-#define LA_VECTOR_H
+#pragma once
 
+#include "inc/util.h"
+#include <initializer_list>
 #include <iostream>
-#include <utility>
-#include <limits>
 
 namespace la
 {
@@ -51,10 +50,12 @@ Vector operator*(const Vector& v, float x);
 Vector operator*(float x, const Vector& v);
 std::ostream& operator<<(std::ostream& os, const Vector& v);
 
-Vector round(const Vector& v, float epsilon = std::numeric_limits<float>::epsilon());
+Vector round(const Vector& v, float epsilon = DEFAULT_EPSILON);
 bool approxEqual(const Vector& v, const Vector& w,
-                 float epsilon = std::numeric_limits<float>::epsilon());
+                 float epsilon = DEFAULT_EPSILON);
+
+Vector homogenize(const Vector& v);
+Vector dehomogenize(const Vector& v);
 
 }  // namespace la
 
-#endif
