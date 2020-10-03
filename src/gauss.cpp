@@ -22,7 +22,6 @@ void eliminate(Matrix& A,
 /**
  * Applies row operations to A.
  * On return, A is in echelon form.
- *
  */
 void forwardReduce(Matrix& A,
                    int (*pivotSelector)(const Vector&, const std::set<int>&))
